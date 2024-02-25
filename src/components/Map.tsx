@@ -1,38 +1,71 @@
 import React, { useEffect, useRef } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import L from 'leaflet';
 import './Map.css';
+import "@maplibre/maplibre-gl-leaflet";
+import "leaflet.markercluster";
+import axios from 'axios';
 
 interface Props {
 
 }
 
-export const Map: React.FC<Props> = () => {
-  const mapContainer = useRef(null);
-  const map = useRef<maplibregl.Map>();
-  
-  useEffect(() => {
-    if(map.current || !mapContainer.current) return;
+interface Stop {
+  stop_code: number,
+  stop_name: string,
+  stop_desc: string,
+  stop_lat: number,
+  stop_lon: number,
+  zone_id: string,
+  stop_url: string,
+  location_type: number,
+  parent_station: number,
+  stop_timezone: string,
+  wheelchair_boarding: number
+}
 
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: "http://localhost:8080/styles/basic-preview/style.json",
-      center: [22.26, 60.45],
+export const Map: React.FC<Props> = () => {
+  const map = useRef<L.Map>()
+
+  useEffect(() => {
+    if(map.current) return;
+    
+
+    map.current = L.map("map", {
+      center: [60.45, 22.26],
       zoom: 13,
-      maxZoom: 16,
-      minZoom: 8,
-      minPitch: 0,
-      maxPitch: 0
+      minZoom: 9,
+      maxZoom: 16
+    })
+
+    L.maplibreGL({
+      style: "http://localhost:8080/styles/basic-preview/style.json"
+    }).addTo(map.current);
+    
+    //Stops
+    const markers = L.markerClusterGroup({
+      disableClusteringAtZoom: 16
     });
 
-    map.current.addControl(new maplibregl.NavigationControl(), 'top-right')
-  }, [])
+    axios.get("http://data.foli.fi/gtfs/stops").then((response) => {
+      Object.entries(response.data).forEach(([key, value]) => {
+        const stop:Stop = value;
 
+        if(map.current){
+          markers.addLayer(L.marker([stop.stop_lat, stop.stop_lon]));
+        }
+        
+      }); 
+    })
+    map.current.addLayer(markers);
+
+    //
+  }, [])
+ 
   
 
   return(
-    <div className="map-wrap">
-      <div ref={mapContainer} className="map"/>
+    <div>
+
     </div>
   );
   
