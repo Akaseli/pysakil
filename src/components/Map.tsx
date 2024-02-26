@@ -34,7 +34,7 @@ export const Map: React.FC<Props> = () => {
       center: [60.45, 22.26],
       zoom: 13,
       minZoom: 9,
-      maxZoom: 16
+      maxZoom: 18
     })
 
     L.maplibreGL({
@@ -51,7 +51,9 @@ export const Map: React.FC<Props> = () => {
         const stop:Stop = value;
 
         if(map.current){
-          markers.addLayer(L.marker([stop.stop_lat, stop.stop_lon]));
+          const marker = L.marker([stop.stop_lat, stop.stop_lon]);
+          marker.bindPopup(`<p>${stop.stop_name} - ${stop.stop_code}</p>`).openPopup()
+          markers.addLayer(marker);
         }
         
       }); 
