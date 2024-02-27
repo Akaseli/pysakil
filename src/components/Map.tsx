@@ -59,8 +59,6 @@ export const Map: React.FC<Props> = () => {
       }); 
     })
     map.current.addLayer(markers);
-
-    //
   }, [])
  
   

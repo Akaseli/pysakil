@@ -1,1 +1,6 @@
-#map { height: 100vh; }
+#map { 
+  margin-left: auto;
+  margin-right: 0;
+  height: 100vh; 
+  width: calc(100vw - 250px);
+}
