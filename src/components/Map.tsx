@@ -6,7 +6,7 @@ import "leaflet.markercluster";
 import axios from 'axios';
 
 interface Props {
-
+  setActive: (arg: number|null) => void
 }
 
 interface Stop {
@@ -23,7 +23,7 @@ interface Stop {
   wheelchair_boarding: number
 }
 
-export const Map: React.FC<Props> = () => {
+export const Map: React.FC<Props> = ({setActive}) => {
   const map = useRef<L.Map>()
 
   useEffect(() => {
@@ -38,6 +38,7 @@ export const Map: React.FC<Props> = () => {
     })
 
     L.maplibreGL({
+      //@ts-expect-error no types
       style: "http://localhost:8080/styles/basic-preview/style.json"
     }).addTo(map.current);
     
@@ -48,11 +49,19 @@ export const Map: React.FC<Props> = () => {
 
     axios.get("http://data.foli.fi/gtfs/stops").then((response) => {
       Object.entries(response.data).forEach(([key, value]) => {
-        const stop:Stop = value;
+        const stop = value as Stop;
 
         if(map.current){
           const marker = L.marker([stop.stop_lat, stop.stop_lon]);
           marker.bindPopup(`<p>${stop.stop_name} - ${stop.stop_code}</p>`).openPopup()
+          //On marker open
+          marker.on("click", () => {
+            setActive(stop.stop_code);
+          })
+          //On popup close
+          marker.getPopup()?.on("remove", () => {
+            setActive(null);
+          })
           markers.addLayer(marker);
         }
         

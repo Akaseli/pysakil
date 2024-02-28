@@ -1,13 +1,36 @@
+import { useEffect, useState } from 'react'
 import './App.css'
 import { Map } from './components/Map'
 import { Sidebar } from './components/Sidebar'
 
 function App() {
+  const [activeStop, setStop] = useState<number|null>(null);
+
+
+  useEffect(() => {
+    const mapElement = document.getElementById("map");
+
+    if(mapElement){
+      if(activeStop){
+        mapElement.toggleAttribute("active", true);
+      }
+      else{
+        mapElement.toggleAttribute("active", false);
+      }
+    }
+    
+  }, [activeStop])
+
+  const setActiveStop = (value: number|null) => {
+    setStop(value);
+  }
+
   return (
     <>
       <div>
-        <Sidebar />
-        <Map />
+        {activeStop ? <Sidebar stop={activeStop}/> : <></>}
+
+        <Map setActive={setActiveStop}/>
       </div>
     </>
   )
