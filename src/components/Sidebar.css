@@ -9,3 +9,8 @@
 .sidebar * {
   margin: 5px;
 }
+
+.sidebar .estimate{
+  color: rgb(104, 104, 104);
+  font-size: small;
+}
