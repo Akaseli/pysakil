@@ -22,7 +22,7 @@ export const Sidebar: React.FC<Props> = ({stop}) => {
     const timeToArrival = Math.abs(Math.round((vehicle.aimedarrivaltime - Date.now()/1000) / 60));
 
 
-    return <div>
+    return <div className='vehicleCard'>
       <p>{vehicle.lineref + " - " + vehicle.destinationdisplay}<span className="estimate">{timeToArrival + "min"}</span></p>
     </div>
   })
@@ -30,7 +30,10 @@ export const Sidebar: React.FC<Props> = ({stop}) => {
   return(
     <div className="sidebar">
       <h2>{"Pysäkki " + stop}</h2>
-      {vehicleCards}
+      <div className='vehicleCards'>
+        {vehicleCards}
+      </div>
+      
     </div>
   );
 }

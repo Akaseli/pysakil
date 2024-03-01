@@ -14,3 +14,23 @@
   color: rgb(104, 104, 104);
   font-size: small;
 }
+
+.sidebar .vehicleCards{
+  width: 100%;
+  margin: 0px;
+}
+
+.sidebar .vehicleCard{
+  padding: 0px;
+  margin: 0px;
+}
+
+.sidebar .vehicleCard p{
+  padding: 3px;
+  margin: 0px;
+}
+
+.sidebar .vehicleCard:nth-child(odd){
+  background-color: rgb(20, 20, 20);
+}
+
