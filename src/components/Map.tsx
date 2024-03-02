@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import L from 'leaflet';
+import L, { point } from 'leaflet';
 import './Map.css';
 import "@maplibre/maplibre-gl-leaflet";
 import "leaflet.markercluster";
@@ -34,8 +34,12 @@ export const Map: React.FC<Props> = ({setActive}) => {
     
     //Stops
     const markers = L.markerClusterGroup({
-      disableClusteringAtZoom: 16
+      disableClusteringAtZoom: 16,
     });
+
+    const pLines = new L.LayerGroup();
+
+    const colors = ["#fc0303", "#fc6f03", "#fcd303", "#a1fc03", "#03fc41", "#03fcd7", "#0390fc", "#0320fc", "#0320fc", "#fc03e8", "#fc037f"]
 
     axios.get("http://data.foli.fi/gtfs/stops").then((response) => {
       Object.entries(response.data).forEach(([key, value]) => {
@@ -47,6 +51,7 @@ export const Map: React.FC<Props> = ({setActive}) => {
           //On marker open
           marker.on("click", () => {
             setActive(stop.stop_code);
+            pLines.clearLayers();
 
             //Polylines
             axios.get("https://data.foli.fi/siri/sm/" + stop.stop_code).then((response) => {
@@ -66,32 +71,40 @@ export const Map: React.FC<Props> = ({setActive}) => {
                 tripIds.push(vehicle.__tripref)
               })
 
+              let tripData: TripData[] = [];
+
               routeRefts.forEach((ref) => {
+                //Get trip data
                 axios.get("https://data.foli.fi/gtfs/v0/trips/route/" + ref).then((response) => {
                   if(!response.data) return;
 
-                  const tripData = response.data as TripData[];
-
+                  tripData = response.data as TripData[];
+                }).then(() => {
                   tripData.forEach((trip) => {
                     if(!tripIds.includes(trip.trip_id)){
                       if(!shapeIds.includes(trip.shape_id)){
                         shapeIds.push(trip.shape_id)
 
-                        //Render polyline
+                        //Get polyline shape
+                        let shape: Shape[] = [];
+
                         axios.get("https://data.foli.fi/gtfs/shapes/"+ trip.shape_id).then((response) => {
                           if(!response.data) return;
 
-                          const shape = response.data as Shape[];
+                          shape = response.data as Shape[];
+                        })
+                        .then(() => {
+                          
                           const points:L.LatLng[] = [];
-
 
                           shape.forEach((point) => {
                             points.push(new L.LatLng(point.lat, point.lon))
-                          })
+                          });
 
-                          const polyline = L.polyline(points);
+                          const polyline = L.polyline(points, {color: colors[shape[shape.length - 1].traveled % colors.length]});
+                          
+                          pLines.addLayer(polyline);
 
-                          map.current?.addLayer(polyline);
                         })
                       }
                     }
@@ -99,10 +112,15 @@ export const Map: React.FC<Props> = ({setActive}) => {
                 })
               });
             });
+
+            map.current?.addLayer(pLines);
           })
           //On popup close
           marker.getPopup()?.on("remove", () => {
             setActive(null);
+            //Remove layers
+            
+            map.current?.removeLayer(pLines);
           })
           markers.addLayer(marker);
         }
