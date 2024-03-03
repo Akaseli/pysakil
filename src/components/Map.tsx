@@ -41,15 +41,27 @@ export const Map: React.FC<Props> = ({setActive}) => {
 
     const colors = ["#fc0303", "#fc6f03", "#fcd303", "#a1fc03", "#03fc41", "#03fcd7", "#0390fc", "#0320fc", "#0320fc", "#fc03e8", "#fc037f"]
 
+    const activeMarker = new L.Marker([0, 0]);
+    
+    map.current.on("click", () => {
+      setActive(null);
+      map.current?.addLayer(markers);
+      map.current?.removeLayer(activeMarker);
+      map.current?.removeLayer(pLines);
+    })
+
     axios.get("http://data.foli.fi/gtfs/stops").then((response) => {
       Object.entries(response.data).forEach(([key, value]) => {
         const stop = value as Stop;
 
         if(map.current){
           const marker = L.marker([stop.stop_lat, stop.stop_lon]);
-          marker.bindPopup(`<p>${stop.stop_name} - ${stop.stop_code}</p>`).openPopup()
           //On marker open
           marker.on("click", () => {
+            activeMarker.setLatLng(marker.getLatLng());
+            map.current?.addLayer(activeMarker);
+            map.current?.removeLayer(markers);
+
             setActive(stop.stop_code);
             pLines.clearLayers();
 
@@ -114,13 +126,6 @@ export const Map: React.FC<Props> = ({setActive}) => {
             });
 
             map.current?.addLayer(pLines);
-          })
-          //On popup close
-          marker.getPopup()?.on("remove", () => {
-            setActive(null);
-            //Remove layers
-            
-            map.current?.removeLayer(pLines);
           })
           markers.addLayer(marker);
         }
