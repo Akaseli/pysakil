@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react'
 import "./Sidebar.css"
 import axios from 'axios';
 import { VehicleData } from '../types/vehicleData';
+import { Stop } from '../types/stop';
 
 interface Props {
   stop: number
 }
 
 export const Sidebar: React.FC<Props> = ({stop}) => {
-  const [vehicles, setVehicles] = useState<VehicleData[]>([]);  
+  const [vehicles, setVehicles] = useState<VehicleData[]>([]);
+  const [stopData ,setStopData] = useState<Stop>();
 
   useEffect(() => {
     axios.get("https://data.foli.fi/siri/sm/" + stop).then((response) => {
@@ -16,6 +18,12 @@ export const Sidebar: React.FC<Props> = ({stop}) => {
 
       setVehicles(response.data["result"]);
     })
+
+    axios.get("http://data.foli.fi/gtfs/stops").then((response) => {
+      if(!response.data) return;
+
+      setStopData(response.data[stop]);
+    });
   }, [stop])
 
   const vehicleCards = vehicles.map((vehicle) => {
@@ -29,7 +37,7 @@ export const Sidebar: React.FC<Props> = ({stop}) => {
 
   return(
     <div className="sidebar">
-      <h2>{"Pysäkki " + stop}</h2>
+      <h2>{stopData?.stop_code + " - " + stopData?.stop_name}</h2>
       <div className='vehicleCards'>
         {vehicleCards}
       </div>
