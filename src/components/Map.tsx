@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import L, { point } from 'leaflet';
+import L from 'leaflet';
 import './Map.css';
 import "@maplibre/maplibre-gl-leaflet";
 import "leaflet.markercluster";
@@ -35,13 +35,22 @@ export const Map: React.FC<Props> = ({setActive}) => {
     //Stops
     const markers = L.markerClusterGroup({
       disableClusteringAtZoom: 16,
+      spiderfyOnMaxZoom: false
     });
 
     const pLines = new L.LayerGroup();
 
     const colors = ["#fc0303", "#fc6f03", "#fcd303", "#a1fc03", "#03fc41", "#03fcd7", "#0390fc", "#0320fc", "#0320fc", "#fc03e8", "#fc037f"]
 
-    const activeMarker = new L.Marker([0, 0]);
+    
+
+    const icon = L.icon({ 
+      iconUrl: "/stop.svg",
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+    })
+
+    const activeMarker = new L.Marker([0, 0], {icon: icon});
     
     map.current.on("click", () => {
       setActive(null);
@@ -55,7 +64,7 @@ export const Map: React.FC<Props> = ({setActive}) => {
         const stop = value as Stop;
 
         if(map.current){
-          const marker = L.marker([stop.stop_lat, stop.stop_lon]);
+          const marker = L.marker([stop.stop_lat, stop.stop_lon], {icon: icon});
           //On marker open
           marker.on("click", () => {
             activeMarker.setLatLng(marker.getLatLng());
