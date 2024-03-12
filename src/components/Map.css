@@ -8,3 +8,14 @@
 #map { 
   height: 100vh; 
 }
+
+.markerCluster{
+  text-align: center;
+  color: black;
+  line-height: 40px;
+  font-weight: bolder;
+  font-size: x-large;
+  background-image: url("cluster.svg");
+  background-position: 50% 50%;
+  background-size: 40px;
+}

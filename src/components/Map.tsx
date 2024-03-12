@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import L from 'leaflet';
+import L, { point } from 'leaflet';
 import './Map.css';
 import "@maplibre/maplibre-gl-leaflet";
 import "leaflet.markercluster";
@@ -35,7 +35,11 @@ export const Map: React.FC<Props> = ({setActive}) => {
     //Stops
     const markers = L.markerClusterGroup({
       disableClusteringAtZoom: 16,
-      spiderfyOnMaxZoom: false
+      spiderfyOnMaxZoom: false,
+      iconCreateFunction: (cluster) => {
+        const html = '<div>' + cluster.getChildCount() + '</div>';
+        return L.divIcon({html: html, className: "markerCluster", iconSize: L.point(40, 40)})
+      }
     });
 
     const pLines = new L.LayerGroup();
