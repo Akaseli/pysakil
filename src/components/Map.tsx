@@ -36,9 +36,18 @@ export const Map: React.FC<Props> = ({setActive}) => {
     const markers = L.markerClusterGroup({
       disableClusteringAtZoom: 16,
       spiderfyOnMaxZoom: false,
+      polygonOptions: {
+        color: "#e3b945"
+      },
       iconCreateFunction: (cluster) => {
-        const html = '<div>' + cluster.getChildCount() + '</div>';
-        return L.divIcon({html: html, className: "markerCluster", iconSize: L.point(40, 40)})
+        let number:number|string = cluster.getChildCount();
+        
+        if(number > 99){
+          number = "99+";
+        }
+
+        const html = '<div>' + number + '</div>';
+        return L.divIcon({html: html, className: "markerCluster", iconSize: L.point(36, 36)})
       }
     });
 

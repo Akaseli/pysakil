@@ -12,10 +12,10 @@
 .markerCluster{
   text-align: center;
   color: black;
-  line-height: 40px;
-  font-weight: bolder;
-  font-size: x-large;
+  line-height: 36px;
+  font-weight:  bold;
+  font-size: 16px;
   background-image: url("cluster.svg");
   background-position: 50% 50%;
-  background-size: 40px;
+  background-size: 36px;
 }
