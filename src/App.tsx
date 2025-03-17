@@ -11,12 +11,15 @@ function App() {
     const mapElement = document.getElementById("map");
 
     if(mapElement){
+      mapElement.toggleAttribute("active", true);
+      /*
       if(activeStop){
         mapElement.toggleAttribute("active", true);
       }
       else{
         mapElement.toggleAttribute("active", false);
       }
+      */
     }
     
   }, [activeStop])
@@ -28,7 +31,7 @@ function App() {
   return (
     <>
       <div>
-        {activeStop ? <Sidebar stop={activeStop}/> : <></>}
+        {activeStop ? <Sidebar stop={activeStop}/> : <div className='sidebar'></div>}
 
         <Map setActive={setActiveStop}/>
       </div>
