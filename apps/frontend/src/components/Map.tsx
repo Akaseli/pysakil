@@ -21,8 +21,6 @@ export const Map: React.FC<Props> = ({setActive}) => {
     iconAnchor: [12, 12],
   })
 
-  const colors = ["#fc0303", "#fc6f03", "#fcd303", "#a1fc03", "#03fc41", "#03fcd7", "#0390fc", "#0320fc", "#0320fc", "#fc03e8", "#fc037f"]
-
   const map = useRef<L.Map>()
   const markerCluster = useRef<L.MarkerClusterGroup>()
   const polyLines = useRef<L.LayerGroup>()
@@ -179,7 +177,7 @@ export const Map: React.FC<Props> = ({setActive}) => {
                     points.push(new L.LatLng(point.lat, point.lon))
                   });
 
-                  const polyline = L.polyline(points, {color: colors[shape[shape.length-1].traveled % colors.length]});
+                  const polyline = L.polyline(points, {color: "#" + routeData.find((r) => {return r.route_id == id})?.route_color});
                   polyline.bringToBack()
                   polyLines.current?.addLayer(polyline);
                 })
