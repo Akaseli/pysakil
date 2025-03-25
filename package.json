@@ -8,7 +8,8 @@
     "turbo": "^2.4.4"
   },
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "packageManager": "npm@10.9.2"
 }

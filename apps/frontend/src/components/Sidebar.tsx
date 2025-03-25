@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import "./Sidebar.css"
 import axios from 'axios';
-import { VehicleData } from '../types/vehicleData';
-import { Stop } from '../types/stop';
-
+import { VehicleData, Stop } from '@repo/types';
 interface Props {
   stop: number,
   setVehicle: (arg: string|null) => void,

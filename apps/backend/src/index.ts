@@ -3,6 +3,7 @@ import axios from 'axios';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from "cors";
+import { VehicleData } from "@repo/types";
 
 const app = express();
 const server = createServer(app);
@@ -38,20 +39,21 @@ server.listen(3000, () => {
 
 
 //Vehicle updating
-const previousVehicles = new Map([]);
+const previousVehicles:Map<string, VehicleData> = new Map([]);
 
 
 setInterval(async () => {
   //TODO add correct metadata
   axios.get("https://data.foli.fi/siri/vm").then((response) => {
-    const vehicles = response.data["result"]["vehicles"];
+    const vehicles:VehicleData[] = response.data["result"]["vehicles"];
 
     Object.keys(vehicles).forEach((vehicle: string) => {
-      const pVec:any = previousVehicles.get(vehicle);
+      const pVec:VehicleData|undefined = previousVehicles.get(vehicle);
+      const nVec:VehicleData = vehicles[vehicle];
 
       if(pVec != undefined){
-        if(pVec["recordedattime"] != vehicles[vehicle]["recordedattime"]){
-          io.to('vehicle-'+ vehicles[vehicle]["blockref"]).emit("update", {lat: vehicles[vehicle]["latitude"], lon: vehicles[vehicle]["longitude"] })
+        if(pVec.recordedattime != nVec.recordedattime){
+          io.to('vehicle-'+ nVec.blockref).emit("update", {lat: nVec.latitude, lon: nVec.longitude })
         }
       }
 

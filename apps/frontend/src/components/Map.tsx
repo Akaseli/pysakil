@@ -4,12 +4,8 @@ import './Map.css';
 import "@maplibre/maplibre-gl-leaflet";
 import "leaflet.markercluster";
 import axios from 'axios';
-import { Stop } from '../types/stop';
-import { VehicleData } from '../types/vehicleData';
-import { TripData } from '../types/tripData';
-import { Shape } from '../types/shape';
+import { Stop, VehicleData, TripData, Shape, RouteData } from '@repo/types';
 import { io } from "socket.io-client";
-import { RouteData } from '../types/routeData';
 
 interface Props {
   setActive: (arg: number|null) => void,
