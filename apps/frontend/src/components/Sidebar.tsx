@@ -5,10 +5,11 @@ import { VehicleData } from '../types/vehicleData';
 import { Stop } from '../types/stop';
 
 interface Props {
-  stop: number
+  stop: number,
+  setVehicle: (arg: string|null) => void,
 }
 
-export const Sidebar: React.FC<Props> = ({stop}) => {
+export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
   const [stopData ,setStopData] = useState<Stop>();
 
@@ -30,7 +31,7 @@ export const Sidebar: React.FC<Props> = ({stop}) => {
     const timeToArrival = Math.abs(Math.round((vehicle.aimedarrivaltime - Date.now()/1000) / 60));
 
 
-    return <div className='vehicleCard'>
+    return <div className='vehicleCard' onClick={() => {setVehicle(vehicle.blockref)}}>
       <p>{vehicle.lineref + " - " + vehicle.destinationdisplay}<span className="estimate">{timeToArrival + "min"}</span></p>
     </div>
   })

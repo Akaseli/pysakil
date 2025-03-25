@@ -8,13 +8,23 @@ import { Stop } from '../types/stop';
 import { VehicleData } from '../types/vehicleData';
 import { TripData } from '../types/tripData';
 import { Shape } from '../types/shape';
+import { io } from "socket.io-client";
 import { RouteData } from '../types/routeData';
 
 interface Props {
-  setActive: (arg: number|null) => void
+  setActive: (arg: number|null) => void,
+  vehicle: string|null
 }
 
-export const Map: React.FC<Props> = ({setActive}) => {
+interface wsData {
+  lon: number,
+  lat: number
+}
+
+//Probably wise to change to something else
+const socket = io("http://localhost:3000")
+
+export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   const icon = L.icon({ 
     iconUrl: "/stop.svg",
     iconSize: [24, 24],
@@ -26,7 +36,7 @@ export const Map: React.FC<Props> = ({setActive}) => {
   const polyLines = useRef<L.LayerGroup>()
 
   const activeMarker:L.Marker = new L.Marker([0, 0], {icon: icon});
-
+  const vehicleMarker: L.Marker = new L.Marker([0, 0], {icon: icon});
 
 
   const handleCurrent = (stop: number|null) => {
@@ -71,8 +81,9 @@ export const Map: React.FC<Props> = ({setActive}) => {
       handleCurrent(null)
     })
 
-    //@ts-expect-error no types
+
     L.maplibreGL({
+      //@ts-expect-error no types
       style: "http://localhost:8080/styles/basic-preview/style.json"
     }).addTo(map.current);
   });
@@ -92,6 +103,7 @@ export const Map: React.FC<Props> = ({setActive}) => {
 
     map.current.on("click", () => {
       if(markerCluster.current){
+        console.log("Re-adding markercluster")
         map.current?.addLayer(markerCluster.current);
       }
     })
@@ -110,6 +122,33 @@ export const Map: React.FC<Props> = ({setActive}) => {
       }
     })
   });
+
+
+
+  const updateActiveVehicle = (message: wsData) => {
+    console.log(message)
+
+    vehicleMarker.setLatLng([message.lat, message.lon])
+  }
+
+  useEffect(() => {
+    if(vehicle){
+      console.log("Now displaying " + vehicle + " on the map!");
+
+      socket.emit("startVehicle", vehicle)
+      socket.on("update", updateActiveVehicle)
+
+      map.current?.addLayer(vehicleMarker)
+    }
+
+    return () => {
+      socket.emit("stopVehicle", vehicle)
+      socket.off("update");
+
+      map.current?.removeLayer(vehicleMarker)
+    }
+
+  }, [vehicle])
 
   const handleMarkerClick = (stop_id: number, marker: L.Marker) => {
     activeMarker.setLatLng(marker.getLatLng())
@@ -189,12 +228,13 @@ export const Map: React.FC<Props> = ({setActive}) => {
     });
     
     if(polyLines.current){
+      console.log("Adding polylines.")
       map.current?.addLayer(polyLines.current);
     }
   }
 
   useEffect(() => {
-    if(!map.current || !markerCluster.current) return;
+    if(!map.current || !markerCluster.current || map.current.hasLayer(markerCluster.current)) return;
 
     axios.get("http://data.foli.fi/gtfs/stops").then((response) => {
       Object.entries(response.data).forEach(([key, value]) => {
@@ -209,6 +249,8 @@ export const Map: React.FC<Props> = ({setActive}) => {
         
       }); 
     })
+
+    console.log("Adding marker cluster.")
     map.current.addLayer(markerCluster.current);
   }, [])
 

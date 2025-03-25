@@ -5,6 +5,7 @@ import { Sidebar } from './components/Sidebar'
 
 function App() {
   const [activeStop, setStop] = useState<number|null>(null);
+  const [vehicle, setVehicle] = useState<string|null>(null);
 
 
   useEffect(() => {
@@ -26,14 +27,19 @@ function App() {
 
   const setActiveStop = (value: number|null) => {
     setStop(value);
+    setVehicle(null);
+  }
+
+  const setActiveVehicle = (value: string|null) => {
+    setVehicle(value);
   }
 
   return (
     <>
       <div>
-        {activeStop ? <Sidebar stop={activeStop}/> : <div className='sidebar'></div>}
+        {activeStop ? <Sidebar stop={activeStop} setVehicle={setActiveVehicle}/> : <div className='sidebar'></div>}
 
-        <Map setActive={setActiveStop}/>
+        <Map setActive={setActiveStop} vehicle={vehicle}/>
       </div>
     </>
   )
