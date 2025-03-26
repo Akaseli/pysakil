@@ -25,6 +25,24 @@
 .sidebar .vehicleCard{
   padding: 0px;
   margin: 0px;
+  display: flex;
+  align-items: baseline;
+}
+
+.sidebar .vehicleCard:hover{
+  cursor: pointer;
+}
+
+.sidebar .vehicleCard .tracked{
+  background-color: white;
+  border-radius: 2px;
+  height: 4px;
+  width: 4px;
+  align-self: center;
+}
+
+.sidebar .vehicleCard .tracked.active{
+  background-color: rgb(0, 255, 0);
 }
 
 .sidebar h2{
