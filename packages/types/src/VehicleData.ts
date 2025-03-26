@@ -23,4 +23,5 @@ export interface VehicleData {
   expecteddeparturetime: number,
   destinationdisplay_sv: string,
   destinationdisplay_en: string,
+  __tripref: string
 }

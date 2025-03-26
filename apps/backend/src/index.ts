@@ -7,7 +7,7 @@ import { VehicleData } from "@repo/types";
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {cors: {origin: "*"}})
+const io = new Server(server, {cors: {origin: "*"}, path: "/api/socket/"})
 
 app.use(cors())
 
@@ -53,7 +53,7 @@ setInterval(async () => {
 
       if(pVec != undefined){
         if(pVec.recordedattime != nVec.recordedattime){
-          io.to('vehicle-'+ nVec.blockref).emit("update", {lat: nVec.latitude, lon: nVec.longitude })
+          io.to('vehicle-'+ nVec.__tripref).emit("update", {lat: nVec.latitude, lon: nVec.longitude })
         }
       }
 

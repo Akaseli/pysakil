@@ -18,7 +18,7 @@ interface wsData {
 }
 
 //Probably wise to change to something else
-const socket = io("http://localhost:3000")
+const socket = io(window.location.href, {path: "/api/socket/"})
 
 export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   const icon = L.icon({ 

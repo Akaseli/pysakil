@@ -29,7 +29,7 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
     const timeToArrival = Math.abs(Math.round((vehicle.aimedarrivaltime - Date.now()/1000) / 60));
 
 
-    return <div className='vehicleCard' onClick={() => {setVehicle(vehicle.blockref)}}>
+    return <div className='vehicleCard' onClick={() => {setVehicle(vehicle.__tripref)}}>
       <p>{vehicle.lineref + " - " + vehicle.destinationdisplay}<span className="estimate">{timeToArrival + "min"}</span></p>
     </div>
   })
