@@ -4,17 +4,106 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from "cors";
 import { VehicleData } from "@repo/types";
+import NodeCache from "node-cache"
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {cors: {origin: "*"}, path: "/api/socket/"})
 
+const cache = new NodeCache()
+
+//1 hour, route paths etc
+const ttlLong = 3600;
+//30 s, bus stop info etc
+const ttlShort = 30;
 app.use(cors())
 
 app.get('/api', (req, res) => {
   res.send('Hello world.');
 });
 
+app.get("/api/stops/", async (req, res) => {
+  const cacheKey = "stops"
+
+  if(cache.has(cacheKey)){
+    res.json(cache.get(cacheKey))
+  }
+  else{
+    const response = await axios.get(`http://data.foli.fi/gtfs/stops`)
+    cache.set(cacheKey, response.data, ttlLong)
+
+    res.json(response.data)
+  }
+})
+
+app.get("/api/stops/:stopNumber", async (req, res) => { 
+  const { stopNumber } = req.params
+
+  const cacheKey = "stop-" + stopNumber
+
+  if(cache.has(cacheKey)){
+    res.json(cache.get(cacheKey))
+  }
+  else{
+    const response = await axios.get(`https://data.foli.fi/siri/sm/${stopNumber}`)
+    cache.set(cacheKey, response.data, ttlShort)
+
+    res.json(response.data)
+  }
+
+});
+
+app.get("/api/routes", async (req, res) => {
+  const cacheKey = "routes"
+
+  if(cache.has(cacheKey)){
+    res.json(cache.get(cacheKey))
+  }
+  else{
+    const response = await axios.get(`https://data.foli.fi/gtfs/routes`)
+
+    cache.set(cacheKey, response.data, ttlLong)
+
+    res.json(response.data)
+  }
+})
+
+app.get("/api/routes/:routeId/trips", async (req, res) => {
+  const { routeId } = req.params;
+
+  const cacheKey = "route-" + routeId + "-trips"
+
+  if(cache.has(cacheKey)){
+    res.json(cache.get(cacheKey))
+  }
+  else{
+    const response = await axios.get(`http://data.foli.fi/gtfs/trips/route/${routeId}`)
+
+    cache.set(cacheKey, response.data, ttlLong)
+
+    res.json(response.data)
+  }
+})
+
+app.get("/api/shapes/:shapeId", async (req, res) => {
+  const {shapeId} = req.params;
+  
+  const cacheKey = "shape-" + shapeId
+
+  if(cache.has(cacheKey)){
+    res.json(cache.get(cacheKey))
+  }
+  else{
+    const response = await axios.get(`https://data.foli.fi/gtfs/shapes/${shapeId}`)
+
+    cache.set(cacheKey, response.data, ttlLong)
+
+    res.json(response.data)
+  }
+})
+
+
+//Socket stuff
 io.on('connection', (socket) => {
   console.log("Connection received.");
 

@@ -159,7 +159,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     handleCurrent(stop_id);
 
     //Polylines
-    axios.get("https://data.foli.fi/siri/sm/" + stop_id).then((response) => {
+    axios.get("/api/stops/" + stop_id).then((response) => {
       if(!response.data) return;
 
       const data = response.data["result"] as VehicleData[];
@@ -175,7 +175,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
         }
       })
 
-      axios.get("https://data.foli.fi/gtfs/routes").then((response) => {
+      axios.get("/api/routes").then((response) => {
         if(!response.data) return;
 
         const routeData = response.data as RouteData[];
@@ -189,7 +189,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
         })
 
         routeIds.forEach((id) => {
-          axios.get("http://data.foli.fi/gtfs/trips/route/" + id).then((response) => {
+          axios.get("/api/routes/" + id + "/trips").then((response) => {
             if(!response.data) return;
 
             const tripData = response.data as TripData[];
@@ -200,7 +200,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
                 
                 let shape: Shape[] = [];
 
-                axios.get("https://data.foli.fi/gtfs/shapes/" + trip.shape_id).then((response) => {
+                axios.get("/api/shapes/" + trip.shape_id).then((response) => {
                   if(!response.data) return;
 
                   shape = response.data as Shape[];
@@ -232,7 +232,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   useEffect(() => {
     if(!map.current || !markerCluster.current || map.current.hasLayer(markerCluster.current)) return;
 
-    axios.get("http://data.foli.fi/gtfs/stops").then((response) => {
+    axios.get("/api/stops").then((response) => {
       Object.entries(response.data).forEach(([key, value]) => {
         const stop = value as Stop;
 

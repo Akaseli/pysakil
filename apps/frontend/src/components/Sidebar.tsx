@@ -13,13 +13,13 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
   const [visibleVehicle, setVisibleVehicle] = useState<string|null>(null);
 
   useEffect(() => {
-    axios.get("https://data.foli.fi/siri/sm/" + stop).then((response) => {
+    axios.get("/api/stops/" + stop).then((response) => {
       if(!response.data) return;
 
       setVehicles(response.data["result"]);
     })
 
-    axios.get("http://data.foli.fi/gtfs/stops").then((response) => {
+    axios.get("/api/stops").then((response) => {
       if(!response.data) return;
 
       setStopData(response.data[stop]);
