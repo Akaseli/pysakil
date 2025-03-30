@@ -142,7 +142,7 @@ setInterval(async () => {
 
       if(pVec != undefined){
         if(pVec.recordedattime != nVec.recordedattime){
-          io.to('vehicle-'+ nVec.__tripref).emit("update", {lat: nVec.latitude, lon: nVec.longitude })
+          io.to('vehicle-'+ nVec.vehicleref).emit("update", {lat: nVec.latitude, lon: nVec.longitude })
         }
       }
 

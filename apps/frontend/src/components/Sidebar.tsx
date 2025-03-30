@@ -26,20 +26,20 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
     });
   }, [stop])
 
-  const handleVehicle = (tripref: string) => {
-    setVehicle(tripref)
-    setVisibleVehicle(tripref)
+  const handleVehicle = (vehicle: VehicleData) => {
+    setVehicle(vehicle.vehicleref)
+    setVisibleVehicle(vehicle.vehicleref + "-" + vehicle.datedvehiclejourneyref)
   }
 
   const vehicleCards = vehicles.map((vehicle) => {
     const timeToArrival = Math.abs(Math.round((vehicle.aimedarrivaltime - Date.now()/1000) / 60));
 
 
-    return <div className='vehicleCard' onClick={() => {handleVehicle(vehicle.__tripref)}}>
+    return <div className='vehicleCard' onClick={() => {handleVehicle(vehicle)}}>
       <p>{vehicle.lineref + " - " + vehicle.destinationdisplay}<span className="estimate">{timeToArrival + "min"}</span></p>
       {
         vehicle.monitored ? ( 
-          (vehicle.__tripref == visibleVehicle) ? <div className='tracked active'/> : <div className='tracked'/> 
+          (vehicle.vehicleref + "-" + vehicle.datedvehiclejourneyref == visibleVehicle) ? <div className='tracked active'/> : <div className='tracked'/> 
       ) : <div />
       }
     </div>
