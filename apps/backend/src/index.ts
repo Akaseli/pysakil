@@ -18,6 +18,9 @@ const ttlLong = 3600;
 const ttlShort = 30;
 app.use(cors())
 
+//VehicleData
+const previousVehicles:Map<string, VehicleData> = new Map([]);
+
 app.get('/api', (req, res) => {
   res.send('Hello world.');
 });
@@ -86,7 +89,7 @@ app.get("/api/routes/:routeId/trips", async (req, res) => {
 })
 
 app.get("/api/shapes/:shapeId", async (req, res) => {
-  const {shapeId} = req.params;
+  const { shapeId } = req.params;
   
   const cacheKey = "shape-" + shapeId
 
@@ -99,6 +102,20 @@ app.get("/api/shapes/:shapeId", async (req, res) => {
     cache.set(cacheKey, response.data, ttlLong)
 
     res.json(response.data)
+  }
+})
+
+app.get("/api/vehicle/:vehicleRef", (req, res) => {
+  const { vehicleRef } = req.params;
+
+  const vehicle:VehicleData|undefined = previousVehicles.get(vehicleRef);
+
+  if(vehicle){
+    res.json({lat: vehicle.latitude, lon: vehicle.longitude})
+  }
+  else{
+    //Will be out of map bounds
+    res.json({lat: 0, lon: 0})
   }
 })
 
@@ -125,11 +142,6 @@ io.on('connection', (socket) => {
 server.listen(3000, () => {
   console.log('Backend up on port 3000');
 });
-
-
-//Vehicle updating
-const previousVehicles:Map<string, VehicleData> = new Map([]);
-
 
 setInterval(async () => {
   //TODO add correct metadata

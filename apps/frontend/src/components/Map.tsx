@@ -127,8 +127,17 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     vehicleMarker.setLatLng([message.lat, message.lon])
   }
 
+  const fetchVehiclePosition = () => {
+    if(vehicle){
+      axios.get("/api/vehicle/" + vehicle).then((response) => {
+        vehicleMarker.setLatLng([response.data.lat, response.data.lon])
+      })
+    }
+  }
+
   useEffect(() => {
     if(vehicle){
+      fetchVehiclePosition()
       console.log("Now displaying " + vehicle + " on the map!");
 
       socket.emit("startVehicle", vehicle)
