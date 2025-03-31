@@ -4,7 +4,7 @@ import axios from 'axios';
 import { VehicleData, Stop } from '@repo/types';
 interface Props {
   stop: number,
-  setVehicle: (arg: string|null) => void,
+  setVehicle: (arg: VehicleData|null) => void,
 }
 
 export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
@@ -27,7 +27,7 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
   }, [stop])
 
   const handleVehicle = (vehicle: VehicleData) => {
-    setVehicle(vehicle.vehicleref)
+    setVehicle(vehicle)
     setVisibleVehicle(vehicle.vehicleref + "-" + vehicle.datedvehiclejourneyref)
   }
 

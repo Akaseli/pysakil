@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import './Map.css';
 import "@maplibre/maplibre-gl-leaflet";
@@ -9,7 +9,7 @@ import { io } from "socket.io-client";
 
 interface Props {
   setActive: (arg: number|null) => void,
-  vehicle: string|null
+  vehicle: VehicleData|null
 }
 
 interface wsData {
@@ -34,14 +34,18 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   const activeMarker:L.Marker = new L.Marker([0, 0], {icon: icon});
   const vehicleMarker: L.Marker = new L.Marker([0, 0], {icon: icon});
 
+  const [currentStop, setCurrentStop] = useState<number|null>(null)
+
 
   const handleCurrent = (stop: number|null) => {
     if(stop){
       setActive(stop)
+      setCurrentStop(stop)
       map.current?.addLayer(activeMarker);
     }
     else{
       setActive(null)
+      setCurrentStop(null)
       map.current?.removeLayer(activeMarker);
     }
   }
@@ -129,7 +133,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
   const fetchVehiclePosition = () => {
     if(vehicle){
-      axios.get("/api/vehicle/" + vehicle).then((response) => {
+      axios.get("/api/vehicle/" + vehicle.vehicleref).then((response) => {
         vehicleMarker.setLatLng([response.data.lat, response.data.lon])
       })
     }
@@ -137,17 +141,24 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
   useEffect(() => {
     if(vehicle){
-      fetchVehiclePosition()
-      console.log("Now displaying " + vehicle + " on the map!");
+      polyLines.current?.clearLayers();
+      getVehiclePolyline(vehicle)
 
-      socket.emit("startVehicle", vehicle)
+      fetchVehiclePosition()
+
+      console.log("Now displaying " + vehicle.vehicleref + " on the map!");
+
+      socket.emit("startVehicle", vehicle.vehicleref)
       socket.on("update", updateActiveVehicle)
 
       map.current?.addLayer(vehicleMarker)
     }
+    else if(currentStop){
+      getPolylines(currentStop)
+    }
 
     return () => {
-      socket.emit("stopVehicle", vehicle)
+      socket.emit("stopVehicle", vehicle?.vehicleref)
       socket.off("update");
 
       map.current?.removeLayer(vehicleMarker)
@@ -164,9 +175,72 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     }
     polyLines.current?.clearLayers();
 
+    //Update polylines
+    getPolylines(stop_id);
+
     //Update sidebar
     handleCurrent(stop_id);
+  }
 
+  const getVehiclePolyline = (vehicle: VehicleData) => {
+    const lineName = vehicle.lineref;
+
+    axios.get("/api/routes").then((response) => {
+      if(!response.data) return;
+
+      const routeData = response.data as RouteData[];
+
+      routeData.forEach((route) => {
+        if(route.route_short_name == lineName){
+          //Correct route found.
+          axios.get("/api/routes/" + route.route_id + "/trips").then((response) => {
+            if(!response.data) return;
+
+            const tripData = response.data as TripData[];
+            
+            let found = false;
+
+            tripData.forEach((trip) => {
+              if(vehicle.blockref == trip.block_id){
+                
+                let shape: Shape[] = []
+
+                if(!found){
+                  found = true
+                  axios.get("/api/shapes/" + trip.shape_id).then((response) => {
+                    if(!response.data) return;
+
+                    shape = response.data as Shape[];
+                  })
+                  .then(() =>  {
+                    const points:L.LatLng[] = []
+
+                    shape.forEach((point) => {
+                      points.push(new L.LatLng(point.lat, point.lon))
+                    });
+                    
+                    const polyline = L.polyline(points, {color: "#" + route.route_color});
+                    polyline.bringToBack()
+                    polyLines.current?.addLayer(polyline);
+                  })
+                }
+              }
+            })
+
+          });
+
+          return;
+        }
+      })
+    })
+
+    if(polyLines.current){
+      console.log("Adding polylines.")
+      map.current?.addLayer(polyLines.current);
+    }
+  }
+
+  const getPolylines = (stop_id: number) => {
     //Polylines
     axios.get("/api/stops/" + stop_id).then((response) => {
       if(!response.data) return;
