@@ -80,7 +80,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
     L.maplibreGL({
       //@ts-expect-error no types
-      style: "http://localhost:8080/styles/basic-preview/style.json"
+      style: "/map/styles/basic-preview/style.json"
     }).addTo(map.current);
   });
 
