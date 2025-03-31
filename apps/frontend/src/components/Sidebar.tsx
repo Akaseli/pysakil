@@ -36,12 +36,17 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
 
 
     return <div className='vehicleCard' onClick={() => {handleVehicle(vehicle)}}>
-      <p>{vehicle.lineref + " - " + vehicle.destinationdisplay}<span className="estimate">{timeToArrival + "min"}</span></p>
-      {
-        vehicle.monitored ? ( 
-          (vehicle.vehicleref + "-" + vehicle.datedvehiclejourneyref == visibleVehicle) ? <div className='tracked active'/> : <div className='tracked'/> 
-      ) : <div />
-      }
+      <p className='route'>{vehicle.lineref + " - " + vehicle.destinationdisplay}</p>
+
+      <div className='extra-info'>
+        {
+          vehicle.monitored ? ( 
+            (vehicle.vehicleref + "-" + vehicle.datedvehiclejourneyref == visibleVehicle) ? <div className='tracked active'/> : <div className='tracked'/> 
+        ) : <div />
+        }
+        <span className="estimate">{timeToArrival + "min"}</span>
+      </div>
+
     </div>
   })
 
