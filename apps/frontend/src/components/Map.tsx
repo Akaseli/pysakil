@@ -74,7 +74,8 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
       minZoom: 10,
       maxZoom: 18,
       maxBounds: bounds,
-      maxBoundsViscosity: 1.0
+      maxBoundsViscosity: 1.0,
+      attributionControl: false
     })
 
     map.current.on("click", () => {
@@ -334,8 +335,8 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   }, [])
 
   return(
-    <div>
-
+    <div> 
+      <div id="map"></div>
     </div>
   );
   

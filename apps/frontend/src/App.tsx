@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { Map } from './components/Map'
 import { Sidebar } from './components/Sidebar'
+import { VehicleData } from '@repo/types';
 
 function App() {
   const [activeStop, setStop] = useState<number|null>(null);
-  const [vehicle, setVehicle] = useState<string|null>(null);
+  const [vehicle, setVehicle] = useState<VehicleData|null>(null);
 
 
   useEffect(() => {
@@ -30,14 +31,14 @@ function App() {
     setVehicle(null);
   }
 
-  const setActiveVehicle = (value: string|null) => {
+  const setActiveVehicle = (value: VehicleData|null) => {
     setVehicle(value);
   }
 
   return (
     <>
       <div>
-        {activeStop ? <Sidebar stop={activeStop} setVehicle={setActiveVehicle}/> : <div className='sidebar'></div>}
+        <Sidebar stop={activeStop} setVehicle={setActiveVehicle}/>
 
         <Map setActive={setActiveStop} vehicle={vehicle}/>
       </div>
