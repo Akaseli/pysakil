@@ -31,8 +31,8 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   const markerCluster = useRef<L.MarkerClusterGroup>()
   const polyLines = useRef<L.LayerGroup>()
 
-  const activeMarker:L.Marker = new L.Marker([0, 0], {icon: icon});
-  const vehicleMarker: L.Marker = new L.Marker([0, 0], {icon: icon});
+  const activeMarker= useRef<L.Marker | null>(null); 
+  const vehicleMarker= useRef<L.Marker | null>(null); 
 
   const [currentStop, setCurrentStop] = useState<number|null>(null)
 
@@ -41,12 +41,16 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     if(stop){
       setActive(stop)
       setCurrentStop(stop)
-      map.current?.addLayer(activeMarker);
+      if(activeMarker.current){
+        map.current?.addLayer(activeMarker.current);
+      }
     }
     else{
       setActive(null)
       setCurrentStop(null)
-      map.current?.removeLayer(activeMarker);
+      if(activeMarker.current){
+        map.current?.removeLayer(activeMarker.current);
+      }
     }
   }
 
@@ -128,15 +132,31 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
   const updateActiveVehicle = (message: wsData) => {
     console.log(message)
-
-    vehicleMarker.setLatLng([message.lat, message.lon])
+    
+    vehicleMarker.current?.setLatLng([message.lat, message.lon])
   }
 
   const fetchVehiclePosition = () => {
     if(vehicle){
       axios.get("/api/vehicle/" + vehicle.vehicleref).then((response) => {
-        vehicleMarker.setLatLng([response.data.lat, response.data.lon])
+
+        if(vehicleMarker.current){
+          vehicleMarker.current.setLatLng([response.data.lat, response.data.lon])
+          
+        }
+        else{
+          vehicleMarker.current = new L.Marker([response.data.lat, response.data.lon], {icon: icon})
+        }
+
+        map.current?.addLayer(vehicleMarker.current);
+
+        if(activeMarker.current && vehicleMarker.current){
+          const featureGroup = L.featureGroup([activeMarker.current, vehicleMarker.current]);
+          map.current?.fitBounds(featureGroup.getBounds())
+        }
       })
+
+
     }
   }
 
@@ -151,8 +171,6 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
       socket.emit("startVehicle", vehicle.vehicleref)
       socket.on("update", updateActiveVehicle)
-
-      map.current?.addLayer(vehicleMarker)
     }
     else if(currentStop){
       getPolylines(currentStop)
@@ -162,13 +180,21 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
       socket.emit("stopVehicle", vehicle?.vehicleref)
       socket.off("update");
 
-      map.current?.removeLayer(vehicleMarker)
+      if(vehicleMarker.current){
+        map.current?.removeLayer(vehicleMarker.current)
+      }
     }
 
   }, [vehicle])
 
   const handleMarkerClick = (stop_id: number, marker: L.Marker) => {
-    activeMarker.setLatLng(marker.getLatLng())
+    if(activeMarker.current){
+      activeMarker.current.setLatLng(marker.getLatLng())
+    }
+    else{
+      activeMarker.current = new L.Marker(marker.getLatLng(), {icon: icon});
+    }
+    
     
     //Clear map
     if(markerCluster.current){

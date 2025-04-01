@@ -1,11 +1,29 @@
 .sidebar{
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 250px;
-  height: 100vh;
+  position: fixed;
+
+  width: 100vw;
+  
+  top: 80vh;
+  bottom: 0px;
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: hidden;
+  background-color: #242424;
+  z-index: 999;
+}
+
+.sidebar .dragarea{
+  height: 10px;
+  width: 50vw;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  background-color: rgb(77, 77, 77);
+
+  touch-action: none;
+}
+
+.sidebar .dragarea:hover{
+  cursor: row-resize;
 }
 
 .sidebar * {
@@ -75,32 +93,17 @@
   background-color: rgb(20, 20, 20);
 }
 
-@media only screen and (max-width: 600px){  
+@media only screen and (min-width: 600px){  
+  .dragarea{
+    display: none;
+  }
+
   .sidebar{
-    position: fixed;
-
-    width: 100vw;
-    
-    top: 80vh;
-    bottom: 0px;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    background-color: #242424;
-    z-index: 999;
-  }
-
-  .sidebar .dragarea{
-    height: 10px;
-    width: 50vw;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 10px;
-    background-color: rgb(77, 77, 77);
-
-    touch-action: none;
-  }
-
-  .sidebar .dragarea:hover{
-    cursor: row-resize;
+    position: absolute;
+    top: 0vh !important;
+    left: 0px;
+    width: 250px;
+    height: 100vh;
+    overflow-y: scroll;
   }
 }
