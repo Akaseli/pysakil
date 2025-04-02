@@ -136,27 +136,19 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     vehicleMarker.current?.setLatLng([message.lat, message.lon])
   }
 
-  const fetchVehiclePosition = () => {
-    if(vehicle){
-      axios.get("/api/vehicle/" + vehicle.vehicleref).then((response) => {
+  const setupVehicle = (message: wsData) => {
+    if(vehicleMarker.current){
+      vehicleMarker.current.setLatLng([message.lat, message.lon])
+    }
+    else{
+      vehicleMarker.current = new L.Marker([message.lat, message.lon], {icon: icon})
+    }
 
-        if(vehicleMarker.current){
-          vehicleMarker.current.setLatLng([response.data.lat, response.data.lon])
-          
-        }
-        else{
-          vehicleMarker.current = new L.Marker([response.data.lat, response.data.lon], {icon: icon})
-        }
+    map.current?.addLayer(vehicleMarker.current);
 
-        map.current?.addLayer(vehicleMarker.current);
-
-        if(activeMarker.current && vehicleMarker.current){
-          const featureGroup = L.featureGroup([activeMarker.current, vehicleMarker.current]);
-          map.current?.fitBounds(featureGroup.getBounds())
-        }
-      })
-
-
+    if(activeMarker.current && vehicleMarker.current){
+      const featureGroup = L.featureGroup([activeMarker.current, vehicleMarker.current]);
+      map.current?.fitBounds(featureGroup.getBounds())
     }
   }
 
@@ -165,12 +157,12 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
       polyLines.current?.clearLayers();
       getVehiclePolyline(vehicle)
 
-      fetchVehiclePosition()
-
       console.log("Now displaying " + vehicle.vehicleref + " on the map!");
 
       socket.emit("startVehicle", vehicle.vehicleref)
+      socket.on("startUpdate", setupVehicle)
       socket.on("update", updateActiveVehicle)
+  
     }
     else if(currentStop){
       getPolylines(currentStop)

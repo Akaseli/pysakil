@@ -105,21 +105,6 @@ app.get("/api/shapes/:shapeId", async (req, res) => {
   }
 })
 
-app.get("/api/vehicle/:vehicleRef", (req, res) => {
-  const { vehicleRef } = req.params;
-
-  const vehicle:VehicleData|undefined = previousVehicles.get(vehicleRef);
-
-  if(vehicle){
-    res.json({lat: vehicle.latitude, lon: vehicle.longitude})
-  }
-  else{
-    //Will be out of map bounds
-    res.json({lat: 0, lon: 0})
-  }
-})
-
-
 //Socket stuff
 io.on('connection', (socket) => {
   console.log("Connection received.");
@@ -129,6 +114,17 @@ io.on('connection', (socket) => {
     
     const rooms = Array.from(socket.rooms).slice(1);
     rooms.forEach((room) => socket.leave(room));
+
+    
+    const data:VehicleData|undefined = previousVehicles.get(vehicle);
+
+    if(vehicle){
+      socket.emit("startUpdate", {lat: data?.latitude, lon: data?.longitude})
+    }
+    else{
+      socket.emit("startUpdate", {lat: 0, lon: 0})
+    }
+    
 
     socket.join("vehicle-" + vehicle);
     console.log(socket.rooms)
