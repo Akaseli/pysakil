@@ -43,7 +43,7 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
     const timeToArrival = Math.abs(Math.round((vehicle.aimedarrivaltime - Date.now()/1000) / 60));
 
 
-    return <div className='vehicleCard' onClick={() => {handleVehicle(vehicle)}}>
+    return <div className='vehicleCard' key={vehicle.datedvehiclejourneyref} onClick={() => {handleVehicle(vehicle)}}>
       <p className='route'>{vehicle.lineref + " - " + vehicle.destinationdisplay}</p>
 
       <div className='extra-info'>

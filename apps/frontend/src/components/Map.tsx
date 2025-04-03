@@ -108,7 +108,6 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
     map.current.on("click", () => {
       if(markerCluster.current){
-        console.log("Re-adding markercluster")
         map.current?.addLayer(markerCluster.current);
       }
     })
@@ -131,8 +130,6 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
 
   const updateActiveVehicle = (message: wsData) => {
-    console.log(message)
-    
     vehicleMarker.current?.setLatLng([message.lat, message.lon])
   }
 
@@ -156,8 +153,6 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     if(vehicle){
       polyLines.current?.clearLayers();
       getVehiclePolyline(vehicle)
-
-      console.log("Now displaying " + vehicle.vehicleref + " on the map!");
 
       socket.emit("startVehicle", vehicle.vehicleref)
       socket.on("startUpdate", setupVehicle)
@@ -254,7 +249,6 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     })
 
     if(polyLines.current){
-      console.log("Adding polylines.")
       map.current?.addLayer(polyLines.current);
     }
   }
@@ -326,7 +320,6 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     });
     
     if(polyLines.current){
-      console.log("Adding polylines.")
       map.current?.addLayer(polyLines.current);
     }
   }
@@ -348,7 +341,6 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
       }); 
     })
 
-    console.log("Adding marker cluster.")
     map.current.addLayer(markerCluster.current);
   }, [])
 
