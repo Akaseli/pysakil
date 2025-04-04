@@ -119,7 +119,7 @@ io.on('connection', (socket) => {
     const data:VehicleData|undefined = previousVehicles.get(vehicle);
 
     if(vehicle){
-      socket.emit("startUpdate", {lat: data?.latitude, lon: data?.longitude})
+      socket.emit("startUpdate", {lat: data?.latitude, lon: data?.longitude,  t: data?.recordedattime})
     }
     else{
       socket.emit("startUpdate", {lat: 0, lon: 0})
@@ -150,7 +150,7 @@ setInterval(async () => {
 
       if(pVec != undefined){
         if(pVec.recordedattime != nVec.recordedattime){
-          io.to('vehicle-'+ nVec.vehicleref).emit("update", {lat: nVec.latitude, lon: nVec.longitude })
+          io.to('vehicle-'+ nVec.vehicleref).emit("update", {lat: nVec.latitude, lon: nVec.longitude, t: nVec.recordedattime })
         }
       }
 

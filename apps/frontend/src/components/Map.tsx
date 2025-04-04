@@ -14,7 +14,8 @@ interface Props {
 
 interface wsData {
   lon: number,
-  lat: number
+  lat: number,
+  t: number
 }
 
 //Probably wise to change to something else
@@ -35,6 +36,9 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   const vehicleMarker= useRef<L.Marker | null>(null); 
 
   const [currentStop, setCurrentStop] = useState<number|null>(null)
+
+  const [updatedAt, setUpdatedAt] = useState<number|null>(null);
+  const [formattedTime, setFormattedTime] = useState<string>("")
 
 
   const handleCurrent = (stop: number|null) => {
@@ -131,6 +135,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
   const updateActiveVehicle = (message: wsData) => {
     vehicleMarker.current?.setLatLng([message.lat, message.lon])
+    setUpdatedAt(message.t);
   }
 
   const setupVehicle = (message: wsData) => {
@@ -141,11 +146,13 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
       vehicleMarker.current = new L.Marker([message.lat, message.lon], {icon: icon})
     }
 
+    setUpdatedAt(message.t);
+
     map.current?.addLayer(vehicleMarker.current);
 
     if(activeMarker.current && vehicleMarker.current){
       const featureGroup = L.featureGroup([activeMarker.current, vehicleMarker.current]);
-      map.current?.fitBounds(featureGroup.getBounds())
+      map.current?.flyToBounds(featureGroup.getBounds(), {duration: 0.5})
     }
   }
 
@@ -169,10 +176,31 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
       if(vehicleMarker.current){
         map.current?.removeLayer(vehicleMarker.current)
+        setUpdatedAt(null);
       }
     }
 
   }, [vehicle])
+
+
+  useEffect(() => {
+    let intervalUpdate: NodeJS.Timeout | undefined;
+
+    if(updatedAt){
+      setFormattedTime(formatTime(updatedAt));
+
+      intervalUpdate = setInterval(() => {
+        setFormattedTime(formatTime(updatedAt));
+      }, 1000)
+    }
+
+    return () => {
+      if(intervalUpdate){
+        clearInterval(intervalUpdate);
+      }
+    }
+
+  }, [updatedAt])
 
   const handleMarkerClick = (stop_id: number, marker: L.Marker) => {
     if(activeMarker.current){
@@ -324,6 +352,26 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     }
   }
 
+  const formatTime = (epochTime: number) => {
+    const timeNow = new Date().getTime() / 1000;
+
+    const between = Math.floor(timeNow - epochTime);
+
+
+    if (between < 60) {
+      return `Sijainti päivitetty ${between}s sitten.`;
+    } 
+    else if (between < 3600) {
+      const minutes = Math.floor(between / 60);
+      return `Sijainti päivitetty ${minutes}min sitten.`;
+    } 
+    else{
+      return `Sijainti päivitetty yli tunti sitten.`
+    }
+    
+
+  }
+
   useEffect(() => {
     if(!map.current || !markerCluster.current || map.current.hasLayer(markerCluster.current)) return;
 
@@ -347,6 +395,9 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   return(
     <div> 
       <div id="map"></div>
+      {
+        updatedAt ? <p className='updatedAt'>{formattedTime}</p> : <div/>
+      }
     </div>
   );
   
