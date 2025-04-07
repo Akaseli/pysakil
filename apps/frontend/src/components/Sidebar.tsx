@@ -146,14 +146,23 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
       <div className='dragarea' onMouseDown={handleMouse} onTouchStart={handleTouch}></div>
       {
         stop ? (
-          <div> 
-            <h2>{stopData?.stop_code + " - " + stopData?.stop_name}</h2>
-            <div className='vehicleCards'>
-              {vehicleCards}
+          <div className='sidebar-content'> 
+            <div className='stopinfo'>
+              <h2>{stopData?.stop_code + " - " + stopData?.stop_name}</h2>
+              <div className='vehicleCards'>
+                {vehicleCards}
+              </div>
             </div>
+            <p className='attribution'>
+              Tietojen lähde: Turun seudun joukkoliikenteen liikennöinti- ja aikatauludata. Aineiston ylläpitäjä on Turun kaupungin joukkoliikennetoimisto. Aineisto on ladattu palvelusta <a href='http://data.foli.fi/' target='_blank'>http://data.foli.fi/</a> lisenssillä Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0).
+            </p>
           </div>
         ) : (
-        <div/>
+        <div className='sidebar-content'> 
+            <p className='attribution'>
+              Tietojen lähde: Turun seudun joukkoliikenteen liikennöinti- ja aikatauludata. Aineiston ylläpitäjä on Turun kaupungin joukkoliikennetoimisto. Aineisto on ladattu palvelusta <a href='http://data.foli.fi/' target='_blank'>http://data.foli.fi/</a> lisenssillä Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0).
+            </p>
+        </div>
       )
       }
 
