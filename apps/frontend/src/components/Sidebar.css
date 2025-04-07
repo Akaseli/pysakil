@@ -40,6 +40,7 @@
   margin: 0px;
   overflow-y: hidden;
   flex-shrink: 1;
+  padding: 0;
 }
 
 
@@ -102,19 +103,24 @@
   flex-direction: column;
 }
 
+.sidebar .project-info p{
+  margin-left: 8px
+}
+
 .sidebar-content{
   width: 100%;
   height: 100%;
   margin: 0px;
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .sidebar .attribution {
   color: grey;
-  font-size: smaller;
+  font-size: small;
   flex-shrink: 0;
+  padding-bottom: 24px;
 }
 
 @media only screen and (min-width: 800px){  
@@ -140,9 +146,8 @@
   }
 
   .stopinfo{
-    overflow-y: scroll;
+    overflow-y: hidden;
   }
-
   .sidebar .vehicleCards{
     overflow-y: scroll;
   }
@@ -152,4 +157,19 @@
 
 .sidebar h2{
   flex-shrink: 0;
+}
+
+.sidebar .sourcecode{
+  display: flex;
+  width: 100%;
+  align-items: center;
+  align-content: baseline;
+  margin: 0px;
+}
+
+.sourcecode a{
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  filter: invert();
 }

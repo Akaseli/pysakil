@@ -159,6 +159,16 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
           </div>
         ) : (
         <div className='sidebar-content'> 
+            <div className='project-info'>
+              <h2>Pysäkil</h2>
+              <p>Fölin pysäkkien ja bussien tiedot kartalla. </p>
+              <div className='sourcecode'>
+                <p>Lähdekoodi: </p>
+                <a href='https://github.com/Akaseli/pysakil' target='_blank'>
+                  <img  src='/github.svg'></img>
+                </a>
+              </div>
+            </div>
             <p className='attribution'>
               Tietojen lähde: Turun seudun joukkoliikenteen liikennöinti- ja aikatauludata. Aineiston ylläpitäjä on Turun kaupungin joukkoliikennetoimisto. Aineisto on ladattu palvelusta <a href='http://data.foli.fi/' target='_blank'>http://data.foli.fi/</a> lisenssillä Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0).
             </p>
