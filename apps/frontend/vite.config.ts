@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [
     react()
   ],
+  build: {
+    outDir: '../../build/frontend'
+  },
   server: {
     proxy: {
       "/api": "http://localhost:3000",

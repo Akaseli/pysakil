@@ -5,10 +5,17 @@ import { Server } from 'socket.io';
 import cors from "cors";
 import { RouteData, VehicleData } from "@repo/types";
 import NodeCache from "node-cache"
+import path from 'path';
+
+const port = process.env.PORT || 3000;
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {cors: {origin: "*"}, path: "/api/socket/"})
+
+if(process.env.PORT){
+  app.use(express.static(path.join(__dirname, "../frontend")));
+}
 
 const cache = new NodeCache()
 
@@ -135,8 +142,8 @@ io.on('connection', (socket) => {
   })
 });
 
-server.listen(3000, () => {
-  console.log('Backend up on port 3000');
+server.listen(port, () => {
+  console.log(`Backend up on port ${port}`);
 });
 
 setInterval(async () => {

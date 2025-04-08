@@ -91,9 +91,11 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     })
 
 
+    const mapUrl = import.meta.env.VITE_MAP_URL || '/map';
+
     L.maplibreGL({
       //@ts-expect-error no types
-      style: "/map/styles/basic-preview/style.json"
+      style: `${mapUrl}/styles/basic-preview/style.json`
     }).addTo(map.current);
   });
 

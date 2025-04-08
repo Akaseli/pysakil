@@ -15,7 +15,7 @@
   line-height: 36px;
   font-weight:  bold;
   font-size: 16px;
-  background-image: url("cluster.svg");
+  background-image: url("/cluster.svg");
   background-position: 50% 50%;
   background-size: 36px;
 }
