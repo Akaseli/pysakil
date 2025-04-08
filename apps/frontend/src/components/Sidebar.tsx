@@ -24,7 +24,11 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
     axios.get("/api/stops/" + stop).then((response) => {
       if(!response.data) return;
 
-      setVehicles(response.data["result"]);
+      let data:VehicleData[] = response.data["result"];
+
+      data = data.sort((a, b) => a.expectedarrivaltime - b.expectedarrivaltime)
+
+      setVehicles(data);
     })
 
     axios.get("/api/stops").then((response) => {
@@ -32,16 +36,25 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
 
       setStopData(response.data[stop]);
     });
+
+    return () => {
+      setVisibleVehicle(null)
+    }
   }, [stop])
 
   const handleVehicle = (vehicle: VehicleData) => {
-    setVehicle(vehicle)
-    setVisibleVehicle(vehicle.vehicleref + "-" + vehicle.datedvehiclejourneyref)
+    if(vehicle.monitored){
+      setVehicle(vehicle)
+      setVisibleVehicle(vehicle.vehicleref + "-" + vehicle.datedvehiclejourneyref)
+    }
+    else{
+      setVehicle(null)
+      setVisibleVehicle(null)
+    }
   }
 
   const vehicleCards = vehicles.map((vehicle) => {
-    const timeToArrival = Math.abs(Math.round((vehicle.aimedarrivaltime - Date.now()/1000) / 60));
-
+    const timeToArrival = Math.max(0 , (Math.round((vehicle.expectedarrivaltime - Date.now()/1000) / 60)));
 
     return <div className='vehicleCard' key={vehicle.datedvehiclejourneyref} onClick={() => {handleVehicle(vehicle)}}>
       <p className='route'>{vehicle.lineref + " - " + vehicle.destinationdisplay}</p>
@@ -50,7 +63,7 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
         {
           vehicle.monitored ? ( 
             (vehicle.vehicleref + "-" + vehicle.datedvehiclejourneyref == visibleVehicle) ? <div className='tracked active'/> : <div className='tracked'/> 
-        ) : <div />
+          ) : <div />
         }
         <span className="estimate">{timeToArrival + "min"}</span>
       </div>

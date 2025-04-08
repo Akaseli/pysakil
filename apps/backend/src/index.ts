@@ -3,7 +3,7 @@ import axios from 'axios';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from "cors";
-import { VehicleData } from "@repo/types";
+import { RouteData, VehicleData } from "@repo/types";
 import NodeCache from "node-cache"
 
 const app = express();
@@ -71,16 +71,16 @@ app.get("/api/routes", async (req, res) => {
   }
 })
 
-app.get("/api/routes/:routeId/trips", async (req, res) => {
-  const { routeId } = req.params;
+app.get("/api/trips/trip/:tripId", async (req, res) => {
+  const { tripId } = req.params;
 
-  const cacheKey = "route-" + routeId + "-trips"
+  const cacheKey = "trip-" + tripId;
 
   if(cache.has(cacheKey)){
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`http://data.foli.fi/gtfs/trips/route/${routeId}`)
+    const response = await axios.get(`http://data.foli.fi/gtfs/trips/trip/${tripId}`)
 
     cache.set(cacheKey, response.data, ttlLong)
 

@@ -151,8 +151,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     map.current?.addLayer(vehicleMarker.current);
 
     if(activeMarker.current && vehicleMarker.current){
-      const featureGroup = L.featureGroup([activeMarker.current, vehicleMarker.current]);
-      map.current?.flyToBounds(featureGroup.getBounds(), {duration: 0.5})
+      map.current?.flyTo(vehicleMarker.current.getLatLng(), map.current.getZoom(), {duration: 1})
     }
   }
 
@@ -224,127 +223,76 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     handleCurrent(stop_id);
   }
 
-  const getVehiclePolyline = (vehicle: VehicleData) => {
-    const lineName = vehicle.lineref;
+  const getVehiclePolyline = async (vehicle: VehicleData) => {
+    const routeData: RouteData[] = (await axios.get("/api/routes")).data;
 
-    axios.get("/api/routes").then((response) => {
-      if(!response.data) return;
+    const tripData = await (await axios.get("/api/trips/trip/" + vehicle.__tripref)).data[0] as TripData;
 
-      const routeData = response.data as RouteData[];
+    let shape: Shape[] = [];
 
-      routeData.forEach((route) => {
-        if(route.route_short_name == lineName){
-          //Correct route found.
-          axios.get("/api/routes/" + route.route_id + "/trips").then((response) => {
-            if(!response.data) return;
+      shape = (await axios.get("/api/shapes/" + tripData.shape_id)).data as Shape[];
 
-            const tripData = response.data as TripData[];
-            
-            let found = false;
+      const points:L.LatLng[] = []
 
-            tripData.forEach((trip) => {
-              if(vehicle.blockref == trip.block_id){
-                
-                let shape: Shape[] = []
+      shape.forEach((point) => {
+        points.push(new L.LatLng(point.lat, point.lon))
+      });
 
-                if(!found){
-                  found = true
-                  axios.get("/api/shapes/" + trip.shape_id).then((response) => {
-                    if(!response.data) return;
-
-                    shape = response.data as Shape[];
-                  })
-                  .then(() =>  {
-                    const points:L.LatLng[] = []
-
-                    shape.forEach((point) => {
-                      points.push(new L.LatLng(point.lat, point.lon))
-                    });
-                    
-                    const polyline = L.polyline(points, {color: "#" + route.route_color});
-                    polyline.bringToBack()
-                    polyLines.current?.addLayer(polyline);
-                  })
-                }
-              }
-            })
-
-          });
-
+      let color = "FFFFFF";
+      
+      routeData.forEach(route => {
+        if(route.route_id == tripData.route_id){
+          color = route.route_color;
           return;
         }
-      })
-    })
+      });
 
-    if(polyLines.current){
-      map.current?.addLayer(polyLines.current);
-    }
+      const polyline = L.polyline(points, {color: "#" + color});
+      polyline.bringToBack()
+      polyLines.current?.addLayer(polyline);
   }
 
-  const getPolylines = (stop_id: number) => {
-    //Polylines
-    axios.get("/api/stops/" + stop_id).then((response) => {
-      if(!response.data) return;
+  const getPolylines = async (stop_id: number) => {
+    const routeData: RouteData[] = (await axios.get("/api/routes")).data;
+    
+    const data = (await axios.get("/api/stops/" + stop_id)).data["result"] as VehicleData[];
 
-      const data = response.data["result"] as VehicleData[];
-      //pick different route refs
-      const lifeRefs:string[] = [];
-      const destinations: string[] = [];
-      const shapeIds: string[] = [];
+    //pick different route refs
+    const lifeRefs:string[] = [];
+    const tripRefs: string[] = [];
 
-      data.forEach((vehicle) => {
-        if(!lifeRefs.includes(vehicle.lineref)){
-          lifeRefs.push(vehicle.lineref);
-          destinations.push(vehicle.destinationdisplay);
+    data.forEach((vehicle) => {
+      if(!lifeRefs.includes(vehicle.lineref)){
+        lifeRefs.push(vehicle.lineref);
+        tripRefs.push(vehicle.__tripref);
+      }
+    })
+
+    tripRefs.forEach(async (ref) => {
+      const tripData = await (await axios.get("/api/trips/trip/" + ref)).data[0] as TripData
+
+      let shape: Shape[] = [];
+
+      shape = (await axios.get("/api/shapes/" + tripData.shape_id)).data as Shape[];
+
+      const points:L.LatLng[] = []
+
+      shape.forEach((point) => {
+        points.push(new L.LatLng(point.lat, point.lon))
+      });
+
+      let color = "FFFFFF";
+      
+      routeData.forEach(route => {
+        if(route.route_id == tripData.route_id){
+          color = route.route_color;
+          return;
         }
-      })
+      });
 
-      axios.get("/api/routes").then((response) => {
-        if(!response.data) return;
-
-        const routeData = response.data as RouteData[];
-
-        const routeIds:string[] = [];
-
-        routeData.forEach((route) => {
-          if(lifeRefs.includes(route.route_short_name)){
-            routeIds.push(route.route_id);
-          }
-        })
-
-        routeIds.forEach((id) => {
-          axios.get("/api/routes/" + id + "/trips").then((response) => {
-            if(!response.data) return;
-
-            const tripData = response.data as TripData[];
-            
-            tripData.forEach((trip) => {
-              if(!shapeIds.includes(trip.shape_id) && destinations.includes(trip.trip_headsign)){
-                shapeIds.push(trip.shape_id);
-                
-                let shape: Shape[] = [];
-
-                axios.get("/api/shapes/" + trip.shape_id).then((response) => {
-                  if(!response.data) return;
-
-                  shape = response.data as Shape[];
-                })
-                .then(() =>  {
-                  const points:L.LatLng[] = []
-
-                  shape.forEach((point) => {
-                    points.push(new L.LatLng(point.lat, point.lon))
-                  });
-
-                  const polyline = L.polyline(points, {color: "#" + routeData.find((r) => {return r.route_id == id})?.route_color});
-                  polyline.bringToBack()
-                  polyLines.current?.addLayer(polyline);
-                })
-              }
-            })
-          })
-        })
-      })
+      const polyline = L.polyline(points, {color: "#" + color});
+      polyline.bringToBack()
+      polyLines.current?.addLayer(polyline);
     });
     
     if(polyLines.current){
