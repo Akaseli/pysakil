@@ -129,7 +129,7 @@ io.on('connection', (socket) => {
       socket.emit("startUpdate", {lat: data?.latitude, lon: data?.longitude,  t: data?.recordedattime})
     }
     else{
-      socket.emit("startUpdate", {lat: 0, lon: 0})
+      socket.emit("startUpdate", {lat: 0, lon: 0, t: 0})
     }
     
 

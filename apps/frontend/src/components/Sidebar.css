@@ -80,6 +80,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  padding: 8px 0 8px 0;
 }
 
 .sidebar .vehicleCard p{

@@ -9,7 +9,7 @@ import { io } from "socket.io-client";
 
 interface Props {
   setActive: (arg: number|null) => void,
-  vehicle: VehicleData|null
+  vehicle: VehicleData|null,
 }
 
 interface wsData {
@@ -95,8 +95,20 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
     L.maplibreGL({
       //@ts-expect-error no types
-      style: `${mapUrl}/styles/basic-preview/style.json`
+      style: `${mapUrl}/styles/basic-preview/style.json`,
+      attribution: "<a href=https://openmaptiles.org/ target=_blank>&copy; OpenMapTiles</a> <span aria-hidden=true>|</span> <a href=https://www.openstreetmap.org/copyright target=_blank>&copy; OpenStreetMap contributors</a>"
+
     }).addTo(map.current);
+
+    L.control.attribution({
+      position: "topright"
+    }).addTo(map.current)
+
+    //Change leaflet link target to be _blank
+    map.current.whenReady(() => {
+      const leafletLink = document.querySelector('.leaflet-control-attribution a[href="https://leafletjs.com"]');
+      if (leafletLink) leafletLink.setAttribute('target', '_blank');
+    })
   });
 
   //Create markerCluster

@@ -1,30 +1,9 @@
-# React + TypeScript + Vite
+# Pysäkil
+Website is running at <not_yet>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Shows [Föli](https://www.foli.fi/) bus stop and vehicle information. 
 
-Currently, two official plugins are available:
+Frontend using React. Map is self-hosted vector tiles created using [OpenMapTiles](https://openmaptiles.org/). Backend using Express and Socketio. Mainly used for caching and some processing of vehicle live locations. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Data source:
+Turku region public transport's transit and timetable data. The administrator of data is Turku region public transport. Dataset is downloaded from http://data.foli.fi/ using the license Creative Commons Attribution 4.0 International (CC BY 4.0).
