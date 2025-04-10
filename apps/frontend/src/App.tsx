@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { Map } from './components/Map'
 import { Sidebar } from './components/Sidebar'
-import { VehicleData } from '@repo/types';
+import { Stop, VehicleData } from '@repo/types';
 
 function App() {
-  const [activeStop, setStop] = useState<number|null>(null);
+  const [activeStop, setStop] = useState<Stop|null>(null);
   const [vehicle, setVehicle] = useState<VehicleData|null>(null);
 
 
@@ -26,7 +26,7 @@ function App() {
     
   }, [activeStop])
 
-  const setActiveStop = (value: number|null) => {
+  const setActiveStop = (value: Stop|null) => {
     setStop(value);
     setVehicle(null);
   }

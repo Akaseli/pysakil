@@ -8,7 +8,7 @@ import { Stop, VehicleData, TripData, Shape, RouteData } from '@repo/types';
 import { io } from "socket.io-client";
 
 interface Props {
-  setActive: (arg: number|null) => void,
+  setActive: (arg: Stop|null) => void,
   vehicle: VehicleData|null,
 }
 
@@ -35,13 +35,13 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   const activeMarker= useRef<L.Marker | null>(null); 
   const vehicleMarker= useRef<L.Marker | null>(null); 
 
-  const [currentStop, setCurrentStop] = useState<number|null>(null)
+  const [currentStop, setCurrentStop] = useState<Stop|null>(null)
 
   const [updatedAt, setUpdatedAt] = useState<number|null>(null);
   const [formattedTime, setFormattedTime] = useState<string>("")
 
 
-  const handleCurrent = (stop: number|null) => {
+  const handleCurrent = (stop: Stop|null) => {
     if(stop){
       setActive(stop)
       setCurrentStop(stop)
@@ -180,7 +180,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   
     }
     else if(currentStop){
-      getPolylines(currentStop)
+      getPolylines(currentStop.stop_code)
     }
 
     return () => {
@@ -215,7 +215,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
   }, [updatedAt])
 
-  const handleMarkerClick = (stop_id: number, marker: L.Marker) => {
+  const handleMarkerClick = (stop: Stop, marker: L.Marker) => {
     if(activeMarker.current){
       activeMarker.current.setLatLng(marker.getLatLng())
     }
@@ -231,10 +231,10 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     polyLines.current?.clearLayers();
 
     //Update polylines
-    getPolylines(stop_id);
+    getPolylines(stop.stop_code);
 
     //Update sidebar
-    handleCurrent(stop_id);
+    handleCurrent(stop);
   }
 
   const getVehiclePolyline = async (vehicle: VehicleData) => {
@@ -344,7 +344,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
         if(map.current){
           const marker = L.marker([stop.stop_lat, stop.stop_lon], {icon: icon});
           //On marker open
-          marker.on("click", () => handleMarkerClick(stop.stop_code, marker))
+          marker.on("click", () => handleMarkerClick(stop, marker))
           markerCluster.current?.addLayer(marker);
         }
         

@@ -1,11 +1,15 @@
 import express from 'express';
-import axios from 'axios';
+import axios, { AxiosHeaders } from 'axios';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from "cors";
 import { RouteData, VehicleData } from "@repo/types";
-import NodeCache from "node-cache"
+import NodeCache from "node-cache";
+import dotenv from 'dotenv'
 import path from 'path';
+
+const envPath = path.join(path.resolve() + "/.env");
+dotenv.config({path: envPath});
 
 const port = process.env.PORT || 3000;
 
@@ -21,12 +25,22 @@ const cache = new NodeCache()
 
 //1 hour, route paths etc
 const ttlLong = 3600;
-//30 s, bus stop info etc
-const ttlShort = 30;
+//60 s, bus stop info etc
+const ttlShort = 60;
 app.use(cors())
 
 //VehicleData
 const previousVehicles:Map<string, VehicleData> = new Map([]);
+
+const headers: Record<string, string> = {};
+
+if(process.env.REQ_UA){
+  headers["User-Agent"] = process.env.REQ_UA;
+}
+else{
+  console.warn("Read https://data.foli.fi/doc/linjaukset-en")
+}
+
 
 app.get('/api', (req, res) => {
   res.send('Hello world.');
@@ -39,7 +53,7 @@ app.get("/api/stops/", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`http://data.foli.fi/gtfs/stops`)
+    const response = await axios.get(`http://data.foli.fi/gtfs/stops`, { headers })
     cache.set(cacheKey, response.data, ttlLong)
 
     res.json(response.data)
@@ -55,7 +69,7 @@ app.get("/api/stops/:stopNumber", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`https://data.foli.fi/siri/sm/${stopNumber}`)
+    const response = await axios.get(`https://data.foli.fi/siri/sm/${stopNumber}`, { headers })
     cache.set(cacheKey, response.data, ttlShort)
 
     res.json(response.data)
@@ -70,7 +84,7 @@ app.get("/api/routes", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`https://data.foli.fi/gtfs/routes`)
+    const response = await axios.get(`https://data.foli.fi/gtfs/routes`, { headers })
 
     cache.set(cacheKey, response.data, ttlLong)
 
@@ -87,7 +101,7 @@ app.get("/api/trips/trip/:tripId", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`http://data.foli.fi/gtfs/trips/trip/${tripId}`)
+    const response = await axios.get(`http://data.foli.fi/gtfs/trips/trip/${tripId}`, { headers })
 
     cache.set(cacheKey, response.data, ttlLong)
 
@@ -104,7 +118,7 @@ app.get("/api/shapes/:shapeId", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`https://data.foli.fi/gtfs/shapes/${shapeId}`)
+    const response = await axios.get(`https://data.foli.fi/gtfs/shapes/${shapeId}`, { headers })
 
     cache.set(cacheKey, response.data, ttlLong)
 
@@ -148,7 +162,7 @@ server.listen(port, () => {
 
 setInterval(async () => {
   //TODO add correct metadata
-  axios.get("https://data.foli.fi/siri/vm").then((response) => {
+  axios.get("https://data.foli.fi/siri/vm", { headers }).then((response) => {
     const vehicles:VehicleData[] = response.data["result"]["vehicles"];
 
     Object.keys(vehicles).forEach((vehicle: string) => {

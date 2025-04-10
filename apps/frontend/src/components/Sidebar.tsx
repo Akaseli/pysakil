@@ -3,13 +3,12 @@ import "./Sidebar.css"
 import axios from 'axios';
 import { VehicleData, Stop } from '@repo/types';
 interface Props {
-  stop: number|null,
+  stop: Stop|null,
   setVehicle: (arg: VehicleData|null) => void,
 }
 
 export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
-  const [stopData ,setStopData] = useState<Stop>();
   const [visibleVehicle, setVisibleVehicle] = useState<string|null>(null);
 
   const [mobileHeight, setMobileHeight] = useState(80);
@@ -19,26 +18,38 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
   const sidebarRef = useRef<HTMLDivElement>(null); 
 
   useEffect(() => {
-    if(!stop) return
+    let intervalUpdate: NodeJS.Timeout | undefined;
 
-    axios.get("/api/stops/" + stop).then((response) => {
-      if(!response.data) return;
-
-      let data:VehicleData[] = response.data["result"];
-
-      data = data.sort((a, b) => a.expectedarrivaltime - b.expectedarrivaltime)
-
-      setVehicles(data);
-    })
-
-    axios.get("/api/stops").then((response) => {
-      if(!response.data) return;
-
-      setStopData(response.data[stop]);
-    });
-
+    if(stop){
+      axios.get("/api/stops/" + stop.stop_code).then((response) => {
+        if(!response.data) return;
+  
+        let data:VehicleData[] = response.data["result"];
+  
+        data = data.sort((a, b) => a.expectedarrivaltime - b.expectedarrivaltime)
+  
+        setVehicles(data);
+      })
+  
+      intervalUpdate = setInterval(() => {
+        axios.get("/api/stops/" + stop.stop_code).then((response) => {
+          if(!response.data) return;
+    
+          let data:VehicleData[] = response.data["result"];
+    
+          data = data.sort((a, b) => a.expectedarrivaltime - b.expectedarrivaltime)
+    
+          setVehicles(data);
+        })
+      }, 15000)
+    }
+    
     return () => {
       setVisibleVehicle(null)
+
+      if(intervalUpdate){
+        clearInterval(intervalUpdate);
+      }
     }
   }, [stop])
 
@@ -69,7 +80,7 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
       </div>
 
     </div>
-  }) 
+  })
 
   const handleDragMove = useCallback((newY: number) => {
     if(dragging){
@@ -161,7 +172,7 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
         stop ? (
           <div className='sidebar-content'> 
             <div className='stopinfo'>
-              <h2>{stopData?.stop_code + " - " + stopData?.stop_name}</h2>
+              <h2>{stop?.stop_code + " - " + stop?.stop_name}</h2>
               <div className='vehicleCards'>
                 {vehicleCards}
               </div>
