@@ -74,7 +74,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     if(map.current) return;
     
 
-    const bounds = L.latLngBounds(L.latLng(60.002419, 20.516968), L.latLng(60.899724, 24.009247))
+    const bounds = L.latLngBounds(L.latLng(59.9, 21.1), L.latLng(60.9, 24.1))
 
     map.current = L.map("map", {
       center: [60.45, 22.26],
