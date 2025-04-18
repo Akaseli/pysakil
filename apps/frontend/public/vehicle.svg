@@ -8,7 +8,7 @@
    version="1.1"
    id="svg1"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
-   sodipodi:docname="stop.svg"
+   sodipodi:docname="pysakil.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,13 +23,13 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
-     inkscape:zoom="4.0000001"
-     inkscape:cx="193.375"
-     inkscape:cy="148.125"
+     inkscape:zoom="2.56"
+     inkscape:cx="200.78125"
+     inkscape:cy="227.14843"
      inkscape:window-width="2560"
      inkscape:window-height="1417"
      inkscape:window-x="1072"
-     inkscape:window-y="189"
+     inkscape:window-y="108"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
@@ -102,57 +102,6 @@
        apply_with_radius="true"
        only_selected="false"
        hide_knots="false" />
-    <inkscape:path-effect
-       effect="fillet_chamfer"
-       id="path-effect4-7-8"
-       is_visible="true"
-       lpeversion="1"
-       nodesatellites_param="F,0,0,1,0,10,0,1 @ F,0,0,1,0,10,0,1 @ F,0,0,1,0,10,0,1 @ F,0,0,1,0,10,0,1"
-       radius="0"
-       unit="px"
-       method="auto"
-       mode="F"
-       chamfer_steps="1"
-       flexible="false"
-       use_knot_distance="true"
-       apply_no_radius="true"
-       apply_with_radius="true"
-       only_selected="false"
-       hide_knots="false" />
-    <inkscape:path-effect
-       effect="fillet_chamfer"
-       id="path-effect4-7-8-0"
-       is_visible="true"
-       lpeversion="1"
-       nodesatellites_param="F,0,0,1,0,10,0,1 @ F,0,0,1,0,10,0,1 @ F,0,0,1,0,10,0,1 @ F,0,0,1,0,10,0,1"
-       radius="0"
-       unit="px"
-       method="auto"
-       mode="F"
-       chamfer_steps="1"
-       flexible="false"
-       use_knot_distance="true"
-       apply_no_radius="true"
-       apply_with_radius="true"
-       only_selected="false"
-       hide_knots="false" />
-    <inkscape:path-effect
-       effect="fillet_chamfer"
-       id="path-effect4-7-8-9"
-       is_visible="true"
-       lpeversion="1"
-       nodesatellites_param="F,0,0,1,0,10,0,1 @ F,0,0,1,0,10,0,1 @ F,0,0,1,0,10,0,1 @ F,0,0,1,0,10,0,1"
-       radius="0"
-       unit="px"
-       method="auto"
-       mode="F"
-       chamfer_steps="1"
-       flexible="false"
-       use_knot_distance="true"
-       apply_no_radius="true"
-       apply_with_radius="true"
-       only_selected="false"
-       hide_knots="false" />
   </defs>
   <g
      inkscape:label="Taso 1"
@@ -186,9 +135,9 @@
        sodipodi:type="rect"
        d="m 31.717455,29.537176 h 36.56509 a 10,10 45 0 1 10,10 v 20.925648 a 10,10 135 0 1 -10,10 h -36.56509 a 10,10 45 0 1 -10,-10 V 39.537176 a 10,10 135 0 1 10,-10 z"
        inkscape:path-effect="#path-effect4"
-       transform="translate(0,0.50887351)" />
+       transform="translate(0,-1.6077932)" />
     <path
-       style="fill:#ffffff;fill-opacity:1;stroke-width:0.292352;stroke-dasharray:none"
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.293;stroke-dasharray:none"
        id="rect2-9"
        width="56.56509"
        height="40.925648"
@@ -196,30 +145,8 @@
        y="29.537176"
        sodipodi:type="rect"
        d="m 31.717455,29.537176 h 36.56509 a 10,10 45 0 1 10,10 v 20.925648 a 10,10 135 0 1 -10,10 h -36.56509 a 10,10 45 0 1 -10,-10 V 39.537176 a 10,10 135 0 1 10,-10 z"
-       transform="matrix(0.76269852,0,0,0.70910941,11.865074,15.053405)"
+       transform="matrix(0.76269852,0,0,0.70910941,11.865074,12.936737)"
        inkscape:path-effect="#path-effect4-7" />
-    <path
-       style="fill:#ffffff;fill-opacity:1;stroke-width:0.292352;stroke-dasharray:none"
-       id="rect2-9-7"
-       width="56.56509"
-       height="40.925648"
-       x="21.717455"
-       y="29.537176"
-       sodipodi:type="rect"
-       d="m 31.717455,29.537176 h 36.56509 a 10,10 45 0 1 10,10 v 20.925648 a 10,10 135 0 1 -10,10 h -36.56509 a 10,10 45 0 1 -10,-10 V 39.537176 a 10,10 135 0 1 10,-10 z"
-       transform="matrix(0.76269852,0,0,0.70910941,11.865129,26.914697)"
-       inkscape:path-effect="#path-effect4-7-8" />
-    <path
-       style="fill:#ffffff;fill-opacity:1;stroke-width:0.292352;stroke-dasharray:none"
-       id="rect2-9-7-5"
-       width="56.56509"
-       height="40.925648"
-       x="21.717455"
-       y="29.537176"
-       sodipodi:type="rect"
-       d="m 31.717455,29.537176 h 36.56509 a 10,10 45 0 1 10,10 v 20.925648 a 10,10 135 0 1 -10,10 h -36.56509 a 10,10 45 0 1 -10,-10 V 39.537176 a 10,10 135 0 1 10,-10 z"
-       transform="matrix(1.1076598,0,0,0.25375228,-5.9332623,54.390916)"
-       inkscape:path-effect="#path-effect4-7-8-9" />
     <path
        style="fill:#3f3f3f;fill-opacity:1;stroke-width:0.293;stroke-dasharray:none"
        id="rect4"
@@ -230,7 +157,7 @@
        sodipodi:type="rect"
        d="m 30.292387,67.685722 h 11.108389 v 4.646759 a 5,5 135 0 1 -5,5 h -1.108389 a 5,5 45 0 1 -5,-5 z"
        inkscape:path-effect="#path-effect5"
-       transform="matrix(0.60413801,0,0,0.69567406,53.270218,14.020467)" />
+       transform="translate(0,-1.6077932)" />
     <path
        style="fill:#3f3f3f;fill-opacity:1;stroke-width:0.293;stroke-dasharray:none"
        id="rect4-3"
@@ -241,23 +168,6 @@
        sodipodi:type="rect"
        d="m 58.59922,67.685722 h 11.108389 v 4.646759 a 5,5 135 0 1 -5,5 H 63.59922 a 5,5 45 0 1 -5,-5 z"
        inkscape:path-effect="#path-effect6"
-       transform="matrix(0.60413801,0,0,0.69567406,-13.685016,14.020467)" />
-    <rect
-       style="fill:#707070;fill-opacity:1;stroke-width:0.215;stroke-linejoin:bevel;stroke-dasharray:none"
-       id="rect3"
-       width="22.801432"
-       height="4.0925646"
-       x="46.678833"
-       y="56.439499"
-       rx="1.554427"
-       ry="1.554427" />
-    <rect
-       style="fill:#707070;fill-opacity:1;stroke-width:0.364;stroke-linejoin:bevel;stroke-dasharray:none"
-       id="rect3-1"
-       width="12.789264"
-       height="20.901312"
-       x="32.136471"
-       y="39.631237"
-       ry="1.7197917" />
+       transform="translate(0,-1.6077932)" />
   </g>
 </svg>

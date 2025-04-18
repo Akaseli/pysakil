@@ -22,10 +22,16 @@ interface wsData {
 const socket = io(window.location.href, {path: "/api/socket/"})
 
 export const Map: React.FC<Props> = ({setActive, vehicle}) => {
-  const icon = L.icon({ 
+  const stopIcon = L.icon({ 
     iconUrl: "/stop.svg",
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+  })
+
+  const vehicleIcon = L.icon({ 
+    iconUrl: "/vehicle.svg",
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
   })
 
   const map = useRef<L.Map>()
@@ -74,7 +80,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     if(map.current) return;
     
 
-    const bounds = L.latLngBounds(L.latLng(59.9, 21.1), L.latLng(60.9, 24.1))
+    const bounds = L.latLngBounds(L.latLng(59.8, 21.1), L.latLng(60.9, 24.1))
 
     map.current = L.map("map", {
       center: [60.45, 22.26],
@@ -157,7 +163,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
       vehicleMarker.current.setLatLng([message.lat, message.lon])
     }
     else{
-      vehicleMarker.current = new L.Marker([message.lat, message.lon], {icon: icon})
+      vehicleMarker.current = new L.Marker([message.lat, message.lon], {icon: vehicleIcon})
     }
 
     setUpdatedAt(message.t);
@@ -220,7 +226,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
       activeMarker.current.setLatLng(marker.getLatLng())
     }
     else{
-      activeMarker.current = new L.Marker(marker.getLatLng(), {icon: icon});
+      activeMarker.current = new L.Marker(marker.getLatLng(), {icon: stopIcon});
     }
     
     
@@ -342,7 +348,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
         const stop = value as Stop;
 
         if(map.current){
-          const marker = L.marker([stop.stop_lat, stop.stop_lon], {icon: icon});
+          const marker = L.marker([stop.stop_lat, stop.stop_lon], {icon: stopIcon});
           //On marker open
           marker.on("click", () => handleMarkerClick(stop, marker))
           markerCluster.current?.addLayer(marker);
