@@ -101,7 +101,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
 
     L.maplibreGL({
       //@ts-expect-error no types
-      style: `${mapUrl}/styles/basic-preview/style.json`,
+      style: `${mapUrl}/styles/basic/style.json`,
       attribution: "<a href=https://openmaptiles.org/ target=_blank>&copy; OpenMapTiles</a> <span aria-hidden=true>|</span> <a href=https://www.openstreetmap.org/copyright target=_blank>&copy; OpenStreetMap contributors</a>"
 
     }).addTo(map.current);
@@ -344,7 +344,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     if(!map.current || !markerCluster.current || map.current.hasLayer(markerCluster.current)) return;
 
     axios.get("/api/stops").then((response) => {
-      Object.entries(response.data).forEach(([key, value]) => {
+      Object.entries(response.data).forEach(([, value]) => {
         const stop = value as Stop;
 
         if(map.current){

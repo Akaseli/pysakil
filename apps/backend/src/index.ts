@@ -18,6 +18,7 @@ const server = createServer(app);
 const io = new Server(server, {cors: {origin: "*"}, path: "/api/socket/"})
 
 if(process.env.PORT){
+  console.log("Serving frontend")
   app.use(express.static(path.join(__dirname, "../frontend")));
 }
 
@@ -128,11 +129,7 @@ app.get("/api/shapes/:shapeId", async (req, res) => {
 
 //Socket stuff
 io.on('connection', (socket) => {
-  console.log("Connection received.");
-
   socket.on("startVehicle", (vehicle) => {
-    console.log("Vehicleee")
-    
     const rooms = Array.from(socket.rooms).slice(1);
     rooms.forEach((room) => socket.leave(room));
 
@@ -146,9 +143,7 @@ io.on('connection', (socket) => {
       socket.emit("startUpdate", {lat: 0, lon: 0, t: 0})
     }
     
-
     socket.join("vehicle-" + vehicle);
-    console.log(socket.rooms)
   })
 
   socket.on("stopVehicle", (vehicle) => {
@@ -161,7 +156,6 @@ server.listen(port, () => {
 });
 
 setInterval(async () => {
-  //TODO add correct metadata
   axios.get("https://data.foli.fi/siri/vm", { headers }).then((response) => {
     const vehicles:VehicleData[] = response.data["result"]["vehicles"];
 
