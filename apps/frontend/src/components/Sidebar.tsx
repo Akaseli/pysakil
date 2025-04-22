@@ -189,7 +189,7 @@ export const Sidebar: React.FC<Props> = ({stop, setVehicle}) => {
               <div className='sourcecode'>
                 <p>Lähdekoodi: </p>
                 <a href='https://github.com/Akaseli/pysakil' target='_blank'>
-                  <img  src='/github.svg'></img>
+                  <img width="30px" height="30px" alt="Github logo" src='/github.svg'></img>
                 </a>
               </div>
             </div>

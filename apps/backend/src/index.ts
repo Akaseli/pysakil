@@ -1,12 +1,13 @@
 import express from 'express';
-import axios, { AxiosHeaders } from 'axios';
+import axios from 'axios';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from "cors";
-import { RouteData, VehicleData } from "@repo/types";
+import { VehicleData } from "@repo/types";
 import NodeCache from "node-cache";
 import dotenv from 'dotenv'
 import path from 'path';
+import compression from 'compression';
 
 const envPath = path.join(path.resolve() + "/.env");
 dotenv.config({path: envPath});
@@ -15,9 +16,18 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {cors: {origin: "*"}, path: "/api/socket/"})
 
-if(process.env.PORT){
+app.use(compression())
+
+let origin = "*"
+
+if(process.env.PRODUCTION){
+  origin = "https://pysakil.akaseli.dev";
+}
+
+const io = new Server(server, {cors: {origin: origin}, path: "/api/socket/"})
+
+if(process.env.PRODUCTION){
   console.log("Serving frontend")
   app.use(express.static(path.join(__dirname, "../frontend")));
 }
@@ -28,7 +38,16 @@ const cache = new NodeCache()
 const ttlLong = 3600;
 //60 s, bus stop info etc
 const ttlShort = 60;
-app.use(cors())
+
+if(process.env.PRODUCTION){
+  app.use(cors({origin: "https://pysakil.akaseli.dev"}))
+}
+else{
+  app.use(cors())
+}
+
+
+
 
 //VehicleData
 const previousVehicles:Map<string, VehicleData> = new Map([]);
