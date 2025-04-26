@@ -178,17 +178,19 @@ setInterval(async () => {
   axios.get("https://data.foli.fi/siri/vm", { headers }).then((response) => {
     const vehicles:VehicleData[] = response.data["result"]["vehicles"];
 
-    Object.keys(vehicles).forEach((vehicle: string) => {
-      const pVec:VehicleData|undefined = previousVehicles.get(vehicle);
-      const nVec:VehicleData = vehicles[vehicle];
+    if(response.status == 200 && (vehicles != undefined || vehicles != null)){
+      Object.keys(vehicles).forEach((vehicle: string) => {
+        const pVec:VehicleData|undefined = previousVehicles.get(vehicle);
+        const nVec:VehicleData = vehicles[vehicle];
 
-      if(pVec != undefined){
-        if(pVec.recordedattime != nVec.recordedattime){
-          io.to('vehicle-'+ nVec.vehicleref).emit("update", {lat: nVec.latitude, lon: nVec.longitude, t: nVec.recordedattime })
+        if(pVec != undefined){
+          if(pVec.recordedattime != nVec.recordedattime){
+            io.to('vehicle-'+ nVec.vehicleref).emit("update", {lat: nVec.latitude, lon: nVec.longitude, t: nVec.recordedattime })
+          }
         }
-      }
 
-      previousVehicles.set(vehicle, vehicles[vehicle]);
-    });
+        previousVehicles.set(vehicle, vehicles[vehicle]);
+      });
+    }
   })
 }, 5000)

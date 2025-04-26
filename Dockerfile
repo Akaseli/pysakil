@@ -13,8 +13,4 @@ COPY apps ./apps
 RUN npm install
 RUN npx turbo run build
 
-ENV PORT=4500
-
-EXPOSE ${PORT}
-
 CMD ["node", "build/backend/index.js"]
