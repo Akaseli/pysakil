@@ -117,7 +117,7 @@ app.get("/api/stops/:stopNumber/times", async (req, res) => {
   else{
     try {
       const response = await axios.get(`https://data.foli.fi/gtfs/stop_times/stop/${stopNumber}`, { headers })
-      cache.set(cacheKey, response.data, ttlShort)
+      cache.set(cacheKey, response.data, ttlLong)
 
       res.json(response.data)
     }
