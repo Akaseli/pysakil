@@ -106,6 +106,27 @@ app.get("/api/stops/:stopNumber", async (req, res) => {
   }
 });
 
+app.get("/api/stops/:stopNumber/times", async (req, res) => { 
+  const { stopNumber } = req.params
+
+  const cacheKey = "stoptimes-" + stopNumber
+
+  if(cache.has(cacheKey)){
+    res.json(cache.get(cacheKey))
+  }
+  else{
+    try {
+      const response = await axios.get(`https://data.foli.fi/gtfs/stop_times/stop/${stopNumber}`, { headers })
+      cache.set(cacheKey, response.data, ttlShort)
+
+      res.json(response.data)
+    }
+    catch (error) {
+      res.sendStatus(500);
+    }
+  }
+});
+
 app.get("/api/routes", async (req, res) => {
   const cacheKey = "routes"
 

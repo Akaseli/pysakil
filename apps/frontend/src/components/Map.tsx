@@ -4,7 +4,7 @@ import './Map.css';
 import "@maplibre/maplibre-gl-leaflet";
 import "leaflet.markercluster";
 import axios from 'axios';
-import { Stop, VehicleData, TripData, Shape, RouteData } from '@repo/types';
+import { Stop, VehicleData, TripData, Shape, RouteData, StopTime } from '@repo/types';
 import { io } from "socket.io-client";
 
 interface Props {
@@ -178,11 +178,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   useEffect(() => {
     if(vehicle){
       polyLines.current?.clearLayers();
-      
-      if(vehicle.__tripref){
-        getVehiclePolyline(vehicle)
-      }
-
+      getVehiclePolyline(vehicle)
       socket.emit("startVehicle", vehicle.vehicleref)
       socket.on("startUpdate", setupVehicle)
       socket.on("update", updateActiveVehicle)
@@ -247,9 +243,21 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   }
 
   const getVehiclePolyline = async (vehicle: VehicleData) => {
-    const routeData: RouteData[] = (await axios.get("/api/routes")).data;
+    if(!currentStop) return;
 
-    const tripData = await (await axios.get("/api/trips/trip/" + vehicle.__tripref)).data[0] as TripData;
+    const routeData: RouteData[] = (await axios.get("/api/routes")).data;
+    const timedata = (await axios.get("/api/stops/" + currentStop.stop_code + "/times" )).data as StopTime[];
+    
+    let tripRef: string|null = null;
+    const validData = timedata.filter(time => time.trip_id.includes(vehicle.blockref))
+    
+    if(validData.length > 0){
+      tripRef = validData[0].trip_id;
+    }
+
+    if(!tripRef) return;
+      
+    const tripData = await (await axios.get("/api/trips/trip/" + tripRef)).data[0] as TripData;
 
     let shape: Shape[] = [];
 
@@ -278,18 +286,29 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   const getPolylines = async (stop_id: number) => {
     const routeData: RouteData[] = (await axios.get("/api/routes")).data;
     
+    //siri sm
     const data = (await axios.get("/api/stops/" + stop_id)).data["result"] as VehicleData[];
 
-    //pick different route refs
-    const lifeRefs:string[] = [];
-    const tripRefs: string[] = [];
+    //gfts data
+    const timedata = (await axios.get("/api/stops/" + stop_id + "/times" )).data as StopTime[];
+
+    const lineToBlock: Record<string, string> = {};
 
     data.forEach((vehicle) => {
-      if(!lifeRefs.includes(vehicle.lineref) && vehicle.__tripref){
-        lifeRefs.push(vehicle.lineref);
-        tripRefs.push(vehicle.__tripref);
+      if(!lineToBlock[vehicle.lineref]){
+        lineToBlock[vehicle.lineref] = vehicle.blockref;
       }
     })
+
+    const tripRefs: string[] = [];
+
+    for(const val of Object.values(lineToBlock)){
+      const validData = timedata.filter(time => time.trip_id.includes(val))
+      
+      if(validData.length > 0){
+        tripRefs.push(validData[0].trip_id);
+      }
+    }
 
     tripRefs.forEach(async (ref) => {
       const tripData = await (await axios.get("/api/trips/trip/" + ref)).data[0] as TripData
