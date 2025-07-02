@@ -178,7 +178,10 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
   useEffect(() => {
     if(vehicle){
       polyLines.current?.clearLayers();
-      getVehiclePolyline(vehicle)
+      
+      if(vehicle.__tripref){
+        getVehiclePolyline(vehicle)
+      }
 
       socket.emit("startVehicle", vehicle.vehicleref)
       socket.on("startUpdate", setupVehicle)
@@ -282,7 +285,7 @@ export const Map: React.FC<Props> = ({setActive, vehicle}) => {
     const tripRefs: string[] = [];
 
     data.forEach((vehicle) => {
-      if(!lifeRefs.includes(vehicle.lineref)){
+      if(!lifeRefs.includes(vehicle.lineref) && vehicle.__tripref){
         lifeRefs.push(vehicle.lineref);
         tripRefs.push(vehicle.__tripref);
       }

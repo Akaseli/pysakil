@@ -73,10 +73,15 @@ app.get("/api/stops/", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`http://data.foli.fi/gtfs/stops`, { headers })
-    cache.set(cacheKey, response.data, ttlLong)
+    try {
+      const response = await axios.get(`http://data.foli.fi/gtfs/stops`, { headers })
+      cache.set(cacheKey, response.data, ttlLong)
 
-    res.json(response.data)
+      res.json(response.data)
+    }
+    catch{
+      res.sendStatus(500);
+    }
   }
 })
 
@@ -89,12 +94,16 @@ app.get("/api/stops/:stopNumber", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`https://data.foli.fi/siri/sm/${stopNumber}`, { headers })
-    cache.set(cacheKey, response.data, ttlShort)
+    try {
+      const response = await axios.get(`https://data.foli.fi/siri/sm/${stopNumber}`, { headers })
+      cache.set(cacheKey, response.data, ttlShort)
 
-    res.json(response.data)
+      res.json(response.data)
+    }
+    catch (error) {
+      res.sendStatus(500);
+    }
   }
-
 });
 
 app.get("/api/routes", async (req, res) => {
@@ -104,11 +113,17 @@ app.get("/api/routes", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`https://data.foli.fi/gtfs/routes`, { headers })
+    try {
+      const response = await axios.get(`https://data.foli.fi/gtfs/routes`, { headers })
 
-    cache.set(cacheKey, response.data, ttlLong)
+      cache.set(cacheKey, response.data, ttlLong)
 
-    res.json(response.data)
+      res.json(response.data)
+    }
+    catch {
+      res.sendStatus(500);
+    }
+
   }
 })
 
@@ -121,12 +136,21 @@ app.get("/api/trips/trip/:tripId", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`http://data.foli.fi/gtfs/trips/trip/${tripId}`, { headers })
+    try{
+      const response = await axios.get(`http://data.foli.fi/gtfs/trips/trip/${tripId}`, { headers })
 
-    cache.set(cacheKey, response.data, ttlLong)
+      cache.set(cacheKey, response.data, ttlLong)
 
-    res.json(response.data)
+      res.json(response.data)
+    }
+    catch (error) {
+      res.sendStatus(500);
+    }
   }
+
+
+
+
 })
 
 app.get("/api/shapes/:shapeId", async (req, res) => {
@@ -138,11 +162,16 @@ app.get("/api/shapes/:shapeId", async (req, res) => {
     res.json(cache.get(cacheKey))
   }
   else{
-    const response = await axios.get(`https://data.foli.fi/gtfs/shapes/${shapeId}`, { headers })
+    try {
+      const response = await axios.get(`https://data.foli.fi/gtfs/shapes/${shapeId}`, { headers })
 
-    cache.set(cacheKey, response.data, ttlLong)
+      cache.set(cacheKey, response.data, ttlLong)
 
-    res.json(response.data)
+      res.json(response.data)
+    }
+    catch {
+      res.sendStatus(500);
+    }
   }
 })
 
