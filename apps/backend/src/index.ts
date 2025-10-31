@@ -223,34 +223,26 @@ server.listen(port, () => {
 });
 
 setInterval(async () => {
-  axios
-    .get("https://data.foli.fi/siri/vm", { headers })
-    .then((response) => {
-      const vehicles: VehicleData[] = response.data["result"]["vehicles"];
+  try {
+    const response = await axios.get("https://data.foli.fi/siri/vm", { headers });
+    const vehicles = response.data?.result?.vehicles;
 
-      if (
-        response.status == 200 &&
-        (vehicles != undefined || vehicles != null)
-      ) {
-        Object.keys(vehicles).forEach((vehicle: string) => {
-          const pVec: VehicleData | undefined = previousVehicles.get(vehicle);
-          const nVec: VehicleData = vehicles[vehicle];
+    if (response.status === 200 && vehicles) {
+      for (const vehicle in vehicles) {
+        const pVec: VehicleData | undefined = previousVehicles.get(vehicle);
+        const nVec: VehicleData = vehicles[vehicle];
 
-          if (pVec != undefined) {
-            if (pVec.recordedattime != nVec.recordedattime) {
-              io.to("vehicle-" + nVec.vehicleref).emit("update", {
-                lat: nVec.latitude,
-                lon: nVec.longitude,
-                t: nVec.recordedattime,
-              });
-            }
-          }
-
-          previousVehicles.set(vehicle, vehicles[vehicle]);
-        });
+        if (pVec && pVec.recordedattime !== nVec.recordedattime) {
+          io.to("vehicle-" + nVec.vehicleref).emit("update", {
+            lat: nVec.latitude,
+            lon: nVec.longitude,
+            t: nVec.recordedattime,
+          });
+        }
+        previousVehicles.set(vehicle, nVec);
       }
-    })
-    .catch((e) => {
-      console.error("Polling request failed: ", e.message);
-    });
+    }
+  } catch (e) {
+    console.error("Polling request failed:", e.message);
+  }
 }, 5000);
